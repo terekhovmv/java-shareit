@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ForbiddenAccessException;
 import ru.practicum.shareit.item.model.Item;
@@ -13,10 +12,13 @@ import java.util.Objects;
 @Slf4j
 @Service
 public class ItemService {
-    @Autowired
-    private UserStorage userStorage;
-    @Autowired
-    private ItemStorage itemStorage;
+    private final UserStorage userStorage;
+    private final ItemStorage itemStorage;
+
+    public ItemService(UserStorage userStorage, ItemStorage itemStorage) {
+        this.userStorage = userStorage;
+        this.itemStorage = itemStorage;
+    }
 
     public Item findById(long id) {
         return itemStorage.findById(id);
@@ -34,8 +36,7 @@ public class ItemService {
         userStorage.requireContains(ownerId);
 
         Item created = itemStorage.create(
-                archetype
-                        .toBuilder()
+                archetype.toBuilder()
                         .ownerId(ownerId)
                         .build()
         );
@@ -58,6 +59,7 @@ public class ItemService {
 
     private void requireAuthorizedAccess(long requesterId, long id) {
         userStorage.requireContains(requesterId);
+
         Item known = itemStorage.findById(id);
         if (!Objects.equals(requesterId, known.getOwnerId())) {
             throw new ForbiddenAccessException("Unauthorized to update item #" + id);

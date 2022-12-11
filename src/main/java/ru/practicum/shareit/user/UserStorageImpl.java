@@ -1,9 +1,9 @@
 package ru.practicum.shareit.user;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
+
 import ru.practicum.shareit.exceptions.DataConflictException;
 import ru.practicum.shareit.user.events.OnDeleteUserEvent;
 import ru.practicum.shareit.user.model.User;
@@ -11,13 +11,15 @@ import ru.practicum.shareit.user.model.User;
 import java.util.*;
 
 @Repository
-@RequiredArgsConstructor
 public class UserStorageImpl implements UserStorage {
-    @Autowired
     private final ApplicationEventPublisher eventPublisher;
 
     private final Map<Long, User> storage = new HashMap<>();
     private long lastId = 1;
+
+    public UserStorageImpl(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
+    }
 
     @Override
     public boolean contains(long id) {
@@ -39,39 +41,31 @@ public class UserStorageImpl implements UserStorage {
     public User create(User archetype) {
         requireUnknownEmail(archetype.getEmail(), null);
 
-        long id = lastId++;
+        final long id = lastId++;
+        User created = archetype.toBuilder()
+                .id(id)
+                .name(archetype.getName())
+                .email(archetype.getEmail())
+                .build();
 
-        User item = new User();
-        item.setId(id);
-        item.setName(archetype.getName());
-        item.setEmail(archetype.getEmail());
-
-        storage.put(id, item);
-        return item;
+        storage.put(id, created);
+        return created;
     }
 
     @Override
     public User update(long id, User patch) {
-        User existent = findById(id);
+        User.UserBuilder builder = findById(id).toBuilder();
 
-        User updated = new User();
-        updated.setId(id);
-
-        String patchName = patch.getName();
-        if ((patchName == null) || patchName.isBlank()) {
-            updated.setName(existent.getName());
-        } else {
-            updated.setName(patchName);
+        if (StringUtils.isNotBlank(patch.getName())) {
+            builder.name(patch.getName());
         }
 
-        String patchEmail = patch.getEmail();
-        if ((patchEmail == null) || patchEmail.isBlank()) {
-            updated.setEmail(existent.getEmail());
-        } else {
-            requireUnknownEmail(patchEmail, id);
-            updated.setEmail(patchEmail);
+        if (StringUtils.isNotBlank(patch.getEmail())) {
+            requireUnknownEmail(patch.getEmail(), id);
+            builder.email(patch.getEmail());
         }
 
+        User updated = builder.build();
         storage.put(id, updated);
         return updated;
     }
@@ -85,8 +79,7 @@ public class UserStorageImpl implements UserStorage {
     }
 
     private void requireUnknownEmail(String email, Long onlyHolder) {
-        if (storage
-                .values()
+        if (storage.values()
                 .stream()
                 .filter(user -> {
                     if (!user.getEmail().equalsIgnoreCase(email)) {

@@ -4,5 +4,5 @@ import lombok.Value;
 
 @Value
 public class OnDeleteUserEvent {
-    private final long id;
+    long id;
 }

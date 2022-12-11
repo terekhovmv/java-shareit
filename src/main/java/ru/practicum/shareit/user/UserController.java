@@ -1,7 +1,5 @@
 package ru.practicum.shareit.user;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -12,12 +10,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/users")
-@RequiredArgsConstructor
 public class UserController {
-    @Autowired
     public final UserService service;
-    @Autowired
     private final UserMapper mapper;
+
+    public UserController(UserService service, UserMapper mapper) {
+        this.service = service;
+        this.mapper = mapper;
+    }
 
     @GetMapping("/{id}")
     public UserDto findById(@PathVariable long id) {

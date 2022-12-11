@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -12,12 +10,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
-@RequiredArgsConstructor
 public class ItemController {
-    @Autowired
     public final ItemService service;
-    @Autowired
     private final ItemMapper mapper;
+
+    public ItemController(ItemService service, ItemMapper mapper) {
+        this.service = service;
+        this.mapper = mapper;
+    }
 
     @GetMapping("/{id}")
     public ItemDto findById(@PathVariable long id) {

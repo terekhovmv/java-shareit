@@ -11,5 +11,4 @@ public class Item {
     String description;
     Boolean available;
     Long ownerId;
-    Long requestId;
 }
