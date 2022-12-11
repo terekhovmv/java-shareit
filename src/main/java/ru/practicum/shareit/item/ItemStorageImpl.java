@@ -43,8 +43,7 @@ public class ItemStorageImpl implements ItemStorage {
         return storage.values()
                 .stream()
                 .filter(Item::getAvailable)
-                .filter(item ->
-                        item.getName().toLowerCase().contains(lowerText)
+                .filter(item -> item.getName().toLowerCase().contains(lowerText)
                         || item.getDescription().toLowerCase().contains(lowerText)
                 )
                 .collect(Collectors.toList());
