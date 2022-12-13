@@ -1,7 +1,12 @@
 package ru.practicum.shareit.request.dto;
 
-/**
- * TODO Sprint add-item-requests.
- */
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
 public class ItemRequestDto {
+    Long id;
+    String description;
+    Long requesterId;
 }
