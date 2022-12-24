@@ -36,14 +36,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(long id, User patch) {
         User toUpdate = userRepository.require(id);
-
-        if (StringUtils.isNotBlank(patch.getName())) {
-            toUpdate.setName(patch.getName());
-        }
-
-        if (StringUtils.isNotBlank(patch.getEmail())) {
-            toUpdate.setEmail(patch.getEmail());
-        }
+        patch(patch, toUpdate);
 
         User updated = userRepository.save(toUpdate);
         log.info("User #{} was successfully updated", updated.getId());
@@ -54,5 +47,15 @@ public class UserServiceImpl implements UserService {
     public void delete(long id) {
         userRepository.deleteById(id);
         log.info("User #{} was successfully updated", id);
+    }
+
+    private void patch(User patch, User destination) {
+        if (StringUtils.isNotBlank(patch.getName())) {
+            destination.setName(patch.getName());
+        }
+
+        if (StringUtils.isNotBlank(patch.getEmail())) {
+            destination.setEmail(patch.getEmail());
+        }
     }
 }
