@@ -1,61 +1,64 @@
 package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @Override
-    public User findById(long id) {
-        return userRepository.require(id);
+    public UserDto findById(long id) {
+        return userMapper.toUserDto(
+                userRepository.require(id)
+        );
     }
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserDto> findAll() {
+        return userRepository
+                .findAll()
+                .stream()
+                .map(userMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public User create(User archetype) {
+    public UserDto create(UserDto archetypeDto) {
+        User archetype = userMapper.toUser(archetypeDto);
+        archetype.setId(null);
+
         User created = userRepository.save(archetype);
         log.info("User {} was successfully added with id {}", created.getName(), created.getId());
-        return created;
+        return userMapper.toUserDto(created);
     }
 
     @Override
-    public User update(long id, User patch) {
+    public UserDto update(long id, UserDto patchDto) {
         User toUpdate = userRepository.require(id);
-        patch(patch, toUpdate);
+        userMapper.patch(patchDto, toUpdate);
 
         User updated = userRepository.save(toUpdate);
         log.info("User #{} was successfully updated", updated.getId());
-        return updated;
+        return userMapper.toUserDto(updated);
     }
 
     @Override
     public void delete(long id) {
         userRepository.deleteById(id);
         log.info("User #{} was successfully updated", id);
-    }
-
-    private void patch(User patch, User destination) {
-        if (StringUtils.isNotBlank(patch.getName())) {
-            destination.setName(patch.getName());
-        }
-
-        if (StringUtils.isNotBlank(patch.getEmail())) {
-            destination.setEmail(patch.getEmail());
-        }
     }
 }

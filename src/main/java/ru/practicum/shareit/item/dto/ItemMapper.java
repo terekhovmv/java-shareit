@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 
@@ -21,5 +22,19 @@ public class ItemMapper {
         mapped.setDescription(from.getDescription());
         mapped.setAvailable(from.getAvailable());
         return mapped;
+    }
+
+    public void patch(ItemDto patch, Item applyTo) {
+        if (StringUtils.isNotBlank(patch.getName())) {
+            applyTo.setName(patch.getName());
+        }
+
+        if (StringUtils.isNotBlank(patch.getDescription())) {
+            applyTo.setDescription(patch.getDescription());
+        }
+
+        if (patch.getAvailable() != null) {
+            applyTo.setAvailable(patch.getAvailable());
+        }
     }
 }

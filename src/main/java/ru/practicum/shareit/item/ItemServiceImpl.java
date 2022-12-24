@@ -1,9 +1,10 @@
 package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ForbiddenAccessException;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -11,40 +12,58 @@ import ru.practicum.shareit.user.model.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final ItemMapper itemMapper;
 
-    public ItemServiceImpl(UserRepository userRepository, ItemRepository itemRepository) {
+    public ItemServiceImpl(
+            UserRepository userRepository,
+            ItemRepository itemRepository,
+            ItemMapper itemMapper
+    ) {
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
+        this.itemMapper = itemMapper;
     }
 
     @Override
-    public Item findById(long id) {
-        return itemRepository.require(id);
+    public ItemDto findById(long id) {
+        return itemMapper.toItemDto(
+                itemRepository.require(id)
+        );
     }
 
     @Override
-    public List<Item> findOwned(long ownerId) {
-        return itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId);
+    public List<ItemDto> findOwned(long ownerId) {
+        return itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId)
+                .stream()
+                .map(itemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Item> findAvailableByText(String text) {
+    public List<ItemDto> findAvailableByText(String text) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        return new ArrayList<>(itemRepository.findAllAvailableByText(text));
 
+        return itemRepository.findAllAvailableByText(text)
+                .stream()
+                .map(itemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Item create(long ownerId, Item archetype) {
+    public ItemDto create(long ownerId, ItemDto archetypeDto) {
         User owner = userRepository.require(ownerId);
+
+        Item archetype = itemMapper.toItem(archetypeDto);
+        archetype.setId(null);
         archetype.setOwner(owner);
 
         Item created = itemRepository.save(archetype);
@@ -54,17 +73,17 @@ public class ItemServiceImpl implements ItemService {
                 ownerId,
                 created.getId()
         );
-        return created;
+        return itemMapper.toItemDto(created);
     }
 
     @Override
-    public Item update(long requesterId, long id, Item patch) {
+    public ItemDto update(long requesterId, long id, ItemDto patchDto) {
         Item toUpdate = requireAuthorized(requesterId, id);
-        patch(patch, toUpdate);
+        itemMapper.patch(patchDto, toUpdate);
 
         Item updated = itemRepository.save(toUpdate);
         log.info("Item #{} was successfully updated by user #{}", updated.getId(), requesterId);
-        return updated;
+        return itemMapper.toItemDto(updated);
     }
 
     private Item requireAuthorized(long requesterId, long id) {
@@ -75,27 +94,5 @@ public class ItemServiceImpl implements ItemService {
             throw new ForbiddenAccessException("Unauthorized to update item #" + id);
         }
         return known;
-    }
-
-    private void patch(Item patch, Item destination) {
-        if (StringUtils.isNotBlank(patch.getName())) {
-            destination.setName(patch.getName());
-        }
-
-        if (StringUtils.isNotBlank(patch.getDescription())) {
-            destination.setDescription(patch.getDescription());
-        }
-
-        if (patch.getAvailable() != null) {
-            destination.setAvailable(patch.getAvailable());
-        }
-
-        if (patch.getOwner() != null) {
-            destination.setOwner(patch.getOwner());
-        }
-
-        if (patch.getRequestId() != null) {
-            destination.setRequestId(patch.getRequestId());
-        }
     }
 }
