@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ForbiddenAccessException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserStorage;
+import ru.practicum.shareit.user.UserRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,10 +12,10 @@ import java.util.Objects;
 @Slf4j
 @Service
 public class ItemServiceImpl implements ItemService {
-    private final UserStorage userStorage;
+    private final UserRepository userStorage;
     private final ItemStorage itemStorage;
 
-    public ItemServiceImpl(UserStorage userStorage, ItemStorage itemStorage) {
+    public ItemServiceImpl(UserRepository userStorage, ItemStorage itemStorage) {
         this.userStorage = userStorage;
         this.itemStorage = itemStorage;
     }
@@ -37,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item create(long ownerId, Item archetype) {
-        userStorage.requireContains(ownerId);
+        userStorage.require(ownerId);
 
         Item created = itemStorage.create(
                 archetype.toBuilder()
@@ -63,7 +63,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void requireAuthorizedAccess(long requesterId, long id) {
-        userStorage.requireContains(requesterId);
+        userStorage.require(requesterId);
 
         Item known = itemStorage.findById(id);
         if (!Objects.equals(requesterId, known.getOwnerId())) {

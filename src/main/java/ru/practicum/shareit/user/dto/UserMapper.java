@@ -6,18 +6,18 @@ import ru.practicum.shareit.user.model.User;
 @Component
 public final class UserMapper {
     public UserDto toUserDto(User from) {
-        return UserDto.builder()
-                .id(from.getId())
-                .name(from.getName())
-                .email(from.getEmail())
-                .build();
+        UserDto mapped = new UserDto();
+        mapped.setId(from.getId());
+        mapped.setName(from.getName());
+        mapped.setEmail(from.getEmail());
+        return mapped;
     }
 
     public User toUser(UserDto from) {
-        return User.builder()
-                .id(from.getId())
-                .name(from.getName())
-                .email(from.getEmail())
-                .build();
+        User mapped = new User();
+        mapped.setId(from.getId());
+        mapped.setName(from.getName());
+        mapped.setEmail(from.getEmail());
+        return mapped;
     }
 }

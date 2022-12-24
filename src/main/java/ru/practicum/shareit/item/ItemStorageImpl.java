@@ -1,10 +1,8 @@
 package ru.practicum.shareit.item;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.events.OnDeleteUserEvent;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -83,16 +81,5 @@ public class ItemStorageImpl implements ItemStorage {
         Item updated = builder.build();
         storage.put(id, updated);
         return updated;
-    }
-
-    @EventListener
-    public void onDeleteUser(OnDeleteUserEvent event) {
-        Iterator<Long> it = storage.keySet().iterator();
-        while (it.hasNext()) {
-            Item item = storage.get(it.next());
-            if (item.getOwnerId() == event.getId()) {
-                it.remove();
-            }
-        }
     }
 }
