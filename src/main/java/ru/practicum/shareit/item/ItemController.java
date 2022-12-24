@@ -21,8 +21,8 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> findOwned(@RequestHeader("X-Sharer-User-Id") long requesterId) {
-        return service.findOwned(requesterId);
+    public List<ItemDto> findOwned(@RequestHeader("X-Sharer-User-Id") long callerId) {
+        return service.findOwned(callerId);
     }
 
     @GetMapping("/search")
@@ -32,18 +32,18 @@ public class ItemController {
 
     @PostMapping
     public ItemDto create(
-            @RequestHeader("X-Sharer-User-Id") long requesterId,
+            @RequestHeader("X-Sharer-User-Id") long callerId,
             @Valid @RequestBody ItemDto archetypeDto
     ) {
-        return service.create(requesterId, archetypeDto);
+        return service.create(callerId, archetypeDto);
     }
 
     @PatchMapping("/{id}")
     public ItemDto update(
-            @RequestHeader("X-Sharer-User-Id") long requesterId,
+            @RequestHeader("X-Sharer-User-Id") long callerId,
             @PathVariable long id,
             @RequestBody ItemDto patchDto
     ) {
-        return service.update(requesterId, id, patchDto);
+        return service.update(callerId, id, patchDto);
     }
 }

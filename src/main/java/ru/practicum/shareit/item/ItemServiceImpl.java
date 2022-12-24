@@ -77,12 +77,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto update(long requesterId, long id, ItemDto patchDto) {
-        Item toUpdate = requireAuthorized(requesterId, id);
+    public ItemDto update(long callerId, long id, ItemDto patchDto) {
+        Item toUpdate = requireAuthorized(callerId, id);
         itemMapper.patch(patchDto, toUpdate);
 
         Item updated = itemRepository.save(toUpdate);
-        log.info("Item #{} was successfully updated by user #{}", updated.getId(), requesterId);
+        log.info("Item #{} was successfully updated by user #{}", updated.getId(), callerId);
         return itemMapper.toItemDto(updated);
     }
 

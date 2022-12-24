@@ -13,5 +13,5 @@ public interface ItemService {
 
     ItemDto create(long ownerId, ItemDto archetypeDto);
 
-    ItemDto update(long requesterId, long id, ItemDto patchDto);
+    ItemDto update(long callerId, long id, ItemDto patchDto);
 }
