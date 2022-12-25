@@ -1,10 +1,13 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")

@@ -8,6 +8,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.ForbiddenAccessException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.exceptions.UnavailableException;
 import ru.practicum.shareit.item.exceptions.UnavailableForOwnerException;
@@ -86,5 +87,20 @@ public class BookingServiceImpl implements BookingService {
                 newStatus
         );
         return bookingMapper.toBookingDto(updated);
+    }
+
+    @Override
+    public BookingDto findById(long callerId, long id) {
+        userRepository.require(callerId);
+        Booking booking = bookingRepository.require(id);
+
+        if (
+                !Objects.equals(callerId, booking.getBooker().getId()) &&
+                !Objects.equals(callerId, booking.getItem().getOwner().getId())
+        ) {
+            throw new NotFoundException("Unable to access booking #" + id);
+        }
+
+        return bookingMapper.toBookingDto(booking);
     }
 }

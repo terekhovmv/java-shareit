@@ -31,4 +31,13 @@ public class BookingController {
     ) {
         return service.setApproved(callerId, id, value);
     }
+
+
+    @GetMapping("/{id}")
+    public BookingDto findById(
+            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @PathVariable long id
+    ) {
+        return service.findById(callerId, id);
+    }
 }
