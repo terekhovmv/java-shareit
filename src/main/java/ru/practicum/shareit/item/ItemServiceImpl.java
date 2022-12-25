@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -45,39 +46,42 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto findById(long id) {
-        return itemMapper.toItemDto(
+    public ItemDto get(long id) {
+        return itemMapper.toDto(
                 itemRepository.require(id)
         );
     }
 
     @Override
-    public List<ItemDto> findOwned(long ownerId) {
+    public List<ItemDto> getOwned(long ownerId) {
         return itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId)
                 .stream()
-                .map(itemMapper::toItemDto)
+                .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<ItemDto> findAvailableByText(String text) {
+    public List<ItemDto> getAvailableWithText(String text) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
 
         return itemRepository.findAllAvailableByText(text)
                 .stream()
-                .map(itemMapper::toItemDto)
+                .map(itemMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ItemDto create(long ownerId, ItemDto archetypeDto) {
+    public ItemDto create(long ownerId, ItemUpdateDto dto) {
         User owner = userRepository.require(ownerId);
 
-        Item archetype = itemMapper.toItem(archetypeDto);
-        archetype.setId(null);
+        Item archetype = new Item();
+        archetype.setName(dto.getName());
+        archetype.setDescription(dto.getDescription());
+        archetype.setAvailable(dto.getAvailable());
         archetype.setOwner(owner);
+        archetype.setRequestId(null);
 
         Item created = itemRepository.save(archetype);
         log.info(
@@ -86,26 +90,34 @@ public class ItemServiceImpl implements ItemService {
                 ownerId,
                 created.getId()
         );
-        return itemMapper.toItemDto(created);
+        return itemMapper.toDto(created);
     }
 
     @Override
-    public ItemDto update(long callerId, long id, ItemDto patchDto) {
+    public ItemDto update(long callerId, long id, ItemUpdateDto dto) {
         userRepository.require(callerId);
         Item toUpdate = itemRepository.require(id);
         if (!Objects.equals(callerId, toUpdate.getOwner().getId())) {
             throw new ForbiddenAccessException("Unauthorized access to item #" + id);
         }
 
-        itemMapper.patch(patchDto, toUpdate);
+        if (StringUtils.isNotBlank(dto.getName())) {
+            toUpdate.setName(dto.getName());
+        }
+        if (StringUtils.isNotBlank(dto.getDescription())) {
+            toUpdate.setDescription(dto.getDescription());
+        }
+        if (dto.getAvailable() != null) {
+            toUpdate.setAvailable(dto.getAvailable());
+        }
 
         Item updated = itemRepository.save(toUpdate);
         log.info("Item #{} was successfully updated by user #{}", updated.getId(), callerId);
-        return itemMapper.toItemDto(updated);
+        return itemMapper.toDto(updated);
     }
 
     @Override
-    public CommentDto addComment(long authorId, long id, CommentRequestDto commentRequestDto) {
+    public CommentDto addComment(long authorId, long id, CommentUpdateDto dto) {
         if (!isUserRealBooker(authorId, id)) {
             throw new NotRealBookerException("Comment author is not the real booker of the item");
         }
@@ -114,7 +126,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.require(id);
 
         Comment archetype = new Comment();
-        archetype.setText(commentRequestDto.getText());
+        archetype.setText(dto.getText());
         archetype.setAuthor(author);
         archetype.setItem(item);
         archetype.setCreated(LocalDateTime.now());
@@ -126,7 +138,7 @@ public class ItemServiceImpl implements ItemService {
                 authorId,
                 id
         );
-        return commentMapper.toCommentDto(created);
+        return commentMapper.toDto(created);
     }
 
     private boolean isUserRealBooker(long userId, long itemId) {

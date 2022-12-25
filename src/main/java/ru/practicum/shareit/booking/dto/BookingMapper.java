@@ -15,13 +15,13 @@ public class BookingMapper {
         this.itemMapper = itemMapper;
     }
 
-    public BookingDto toBookingDto(Booking from) {
+    public BookingDto toDto(Booking from) {
         BookingDto mapped = new BookingDto();
         mapped.setId(from.getId());
         mapped.setStart(from.getStart());
         mapped.setEnd(from.getEnd());
-        mapped.setItem(itemMapper.toItemDto(from.getItem()));
-        mapped.setBooker(userMapper.toUserDto(from.getBooker()));
+        mapped.setItem(itemMapper.toDto(from.getItem()));
+        mapped.setBooker(userMapper.toDto(from.getBooker()));
         mapped.setStatus(from.getStatus());
         return mapped;
     }

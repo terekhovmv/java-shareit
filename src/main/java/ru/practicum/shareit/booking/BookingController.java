@@ -2,7 +2,7 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingFilter;
-import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookingUpdateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
 import javax.validation.Valid;
@@ -19,11 +19,11 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingDto book(
+    public BookingDto create(
             @RequestHeader("X-Sharer-User-Id") long callerId,
-            @Valid @RequestBody BookingRequestDto bookingRequestDto
+            @Valid @RequestBody BookingUpdateDto dto
     ) {
-        return service.book(callerId, bookingRequestDto);
+        return service.create(callerId, dto);
     }
 
     @PatchMapping("/{id}")
@@ -36,11 +36,11 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    public BookingDto findById(
+    public BookingDto get(
             @RequestHeader("X-Sharer-User-Id") long callerId,
             @PathVariable long id
     ) {
-        return service.findById(callerId, id);
+        return service.get(callerId, id);
     }
 
     @GetMapping

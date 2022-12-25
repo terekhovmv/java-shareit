@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.dto.BookingRequestDto;
+import ru.practicum.shareit.booking.dto.BookingUpdateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.exceptions.AlreadyApprovedBookingException;
 import ru.practicum.shareit.booking.exceptions.UnableToManageBookingException;
@@ -44,9 +44,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto book(long callerId, BookingRequestDto bookingRequestDto) {
+    public BookingDto create(long callerId, BookingUpdateDto dto) {
         User caller = userRepository.require(callerId);
-        Item item = itemRepository.require(bookingRequestDto.getItemId());
+        Item item = itemRepository.require(dto.getItemId());
 
         if (Objects.equals(callerId, item.getOwner().getId())) {
             throw new UnableToCreateBookingException("Unable to book owned item #" + item.getId());
@@ -57,8 +57,8 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Booking archetype = new Booking();
-        archetype.setStart(bookingRequestDto.getStart());
-        archetype.setEnd(bookingRequestDto.getEnd());
+        archetype.setStart(dto.getStart());
+        archetype.setEnd(dto.getEnd());
         archetype.setItem(item);
         archetype.setBooker(caller);
         archetype.setStatus(BookingStatus.WAITING);
@@ -70,7 +70,7 @@ public class BookingServiceImpl implements BookingService {
                 item.getOwner().getId(),
                 callerId
         );
-        return bookingMapper.toBookingDto(created);
+        return bookingMapper.toDto(created);
     }
 
     @Override
@@ -97,11 +97,11 @@ public class BookingServiceImpl implements BookingService {
                 prevStatus,
                 newStatus
         );
-        return bookingMapper.toBookingDto(updated);
+        return bookingMapper.toDto(updated);
     }
 
     @Override
-    public BookingDto findById(long callerId, long id) {
+    public BookingDto get(long callerId, long id) {
         userRepository.require(callerId);
         Booking booking = bookingRepository.require(id);
 
@@ -112,7 +112,7 @@ public class BookingServiceImpl implements BookingService {
             throw new NotFoundException("Unable to access booking #" + id);
         }
 
-        return bookingMapper.toBookingDto(booking);
+        return bookingMapper.toDto(booking);
     }
 
     @Override
@@ -160,7 +160,7 @@ public class BookingServiceImpl implements BookingService {
 
         return found
                 .stream()
-                .map(bookingMapper::toBookingDto)
+                .map(bookingMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -208,7 +208,7 @@ public class BookingServiceImpl implements BookingService {
 
         return found
                 .stream()
-                .map(bookingMapper::toBookingDto)
+                .map(bookingMapper::toDto)
                 .collect(Collectors.toList());
     }
 }
