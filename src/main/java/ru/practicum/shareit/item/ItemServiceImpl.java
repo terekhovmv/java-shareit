@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exceptions.ForbiddenAccessException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -11,7 +10,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -78,21 +76,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto update(long callerId, long id, ItemDto patchDto) {
-        Item toUpdate = requireAuthorized(callerId, id);
+        User caller = userRepository.require(callerId);
+        Item toUpdate = itemRepository.requireAuthorized(caller, id);
+
         itemMapper.patch(patchDto, toUpdate);
 
         Item updated = itemRepository.save(toUpdate);
         log.info("Item #{} was successfully updated by user #{}", updated.getId(), callerId);
         return itemMapper.toItemDto(updated);
-    }
-
-    private Item requireAuthorized(long requesterId, long id) {
-        userRepository.require(requesterId);
-
-        Item known = itemRepository.require(id);
-        if (!Objects.equals(requesterId, known.getOwner().getId())) {
-            throw new ForbiddenAccessException("Unauthorized to update item #" + id);
-        }
-        return known;
     }
 }
