@@ -6,13 +6,14 @@ import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.exceptions.AlreadyApprovedBookingException;
+import ru.practicum.shareit.booking.exceptions.UnableToManageBookingException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
-import ru.practicum.shareit.exceptions.ForbiddenAccessException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.item.exceptions.UnavailableException;
-import ru.practicum.shareit.item.exceptions.UnavailableForOwnerException;
+import ru.practicum.shareit.booking.exceptions.UnavailableForBookingException;
+import ru.practicum.shareit.booking.exceptions.UnableToCreateBookingException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -47,11 +48,12 @@ public class BookingServiceImpl implements BookingService {
         User caller = userRepository.require(callerId);
         Item item = itemRepository.require(bookingRequestDto.getItemId());
 
-        if (!item.getAvailable()) {
-            throw new UnavailableException("Item #" + item.getId() + " is not available");
-        }
         if (Objects.equals(callerId, item.getOwner().getId())) {
-            throw new UnavailableForOwnerException("Unable to book item #" + item.getId() + " by item owner");
+            throw new UnableToCreateBookingException("Unable to book owned item #" + item.getId());
+        }
+
+        if (!item.getAvailable()) {
+            throw new UnavailableForBookingException("Item #" + item.getId() + " is not available");
         }
 
         Booking archetype = new Booking();
@@ -75,11 +77,16 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto setApproved(long callerId, long id, boolean value) {
         userRepository.require(callerId);
         Booking booking = bookingRepository.require(id);
+
         if (!Objects.equals(callerId, booking.getItem().getOwner().getId())) {
-            throw new ForbiddenAccessException("Unauthorized access to booking #" + id);
+            throw new UnableToManageBookingException("Unable to approve/reject booking #" + id);
         }
 
         BookingStatus prevStatus = booking.getStatus();
+        if (prevStatus == BookingStatus.APPROVED) {
+            throw new AlreadyApprovedBookingException("Booking #" + id + " is already approved");
+        }
+
         BookingStatus newStatus = value ? BookingStatus.APPROVED : BookingStatus.REJECTED;
         booking.setStatus(newStatus);
 

@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.validation.ValidationException;
 
 import ru.practicum.shareit.booking.BookingController;
+import ru.practicum.shareit.booking.exceptions.AlreadyApprovedBookingException;
+import ru.practicum.shareit.booking.exceptions.UnableToManageBookingException;
 import ru.practicum.shareit.errors.dto.ErrorResponseDto;
 import ru.practicum.shareit.exceptions.ForbiddenAccessException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemController;
-import ru.practicum.shareit.item.exceptions.UnavailableException;
-import ru.practicum.shareit.item.exceptions.UnavailableForOwnerException;
+import ru.practicum.shareit.booking.exceptions.UnavailableForBookingException;
+import ru.practicum.shareit.booking.exceptions.UnableToCreateBookingException;
 import ru.practicum.shareit.user.UserController;
 
 @Slf4j
@@ -29,15 +31,20 @@ import ru.practicum.shareit.user.UserController;
 })
 public class ErrorHandler {
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponseDto handleNotFoundException(NotFoundException exception) {
-        return createErrorResponse(exception);
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponseDto handleForbiddenException(ForbiddenAccessException exception) {
         return createErrorResponse(exception);
+    }
+
+    @ExceptionHandler({
+            NotFoundException.class,
+
+            UnableToCreateBookingException.class, // issue in Postman tests, this should be FORBIDDEN
+            UnableToManageBookingException.class  // issue in Postman tests, this should be FORBIDDEN
+    })
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponseDto handleNotFoundException(Throwable throwable) {
+        return createErrorResponse(throwable);
     }
 
     @ExceptionHandler({
@@ -52,8 +59,9 @@ public class ErrorHandler {
             ValidationException.class,
             MethodArgumentNotValidException.class,
             MissingRequestHeaderException.class,
-            UnavailableException.class,
-            UnavailableForOwnerException.class
+
+            AlreadyApprovedBookingException.class,
+            UnavailableForBookingException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto handleValidationException(Throwable throwable) {
