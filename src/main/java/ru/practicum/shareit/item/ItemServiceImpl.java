@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.ForbiddenAccessException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.exceptions.NotRealBookerException;
@@ -161,7 +160,7 @@ public class ItemServiceImpl implements ItemService {
 
     private boolean isUserRealBooker(long userId, long itemId) {
          Integer count = bookingRepository.getFinishedCount(userId, itemId, LocalDateTime.now());
-         return (count == null) ? false : count > 0;
+         return (count != null) && (count > 0);
     }
 
     private List<Comment> getComments(long itemId) {
