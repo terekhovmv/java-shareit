@@ -123,38 +123,22 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> found = null;
         switch (filter) {
             case ALL:
-                found = bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId);
+                found = bookingRepository.getAllForBooker(bookerId);
                 break;
             case WAITING:
-                found = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
-                        bookerId,
-                        BookingStatus.WAITING
-                );
+                found = bookingRepository.getInStatusForBooker(bookerId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                found = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
-                        bookerId,
-                        BookingStatus.REJECTED
-                );
+                found = bookingRepository.getInStatusForBooker(bookerId, BookingStatus.REJECTED);
                 break;
             case PAST:
-                found = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
-                        bookerId,
-                        now
-                );
+                found = bookingRepository.getPastForBooker(bookerId, now);
                 break;
             case FUTURE:
-                found = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(
-                        bookerId,
-                        now
-                );
+                found = bookingRepository.getFutureForBooker(bookerId, now);
                 break;
             case CURRENT:
-                found = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
-                        bookerId,
-                        now,
-                        now
-                );
+                found = bookingRepository.getCurrentForBooker(bookerId, now);
                 break;
         }
 
@@ -171,38 +155,22 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> found = null;
         switch (filter) {
             case ALL:
-                found = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId);
+                found = bookingRepository.getAllForOwner(ownerId);
                 break;
             case WAITING:
-                found = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(
-                        ownerId,
-                        BookingStatus.WAITING
-                );
+                found = bookingRepository.getInStatusForOwner(ownerId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                found = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(
-                        ownerId,
-                        BookingStatus.REJECTED
-                );
+                found = bookingRepository.getInStatusForOwner(ownerId, BookingStatus.REJECTED);
                 break;
             case PAST:
-                found = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(
-                        ownerId,
-                        now
-                );
+                found = bookingRepository.getPastForOwner(ownerId, now);
                 break;
             case FUTURE:
-                found = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(
-                        ownerId,
-                        now
-                );
+                found = bookingRepository.getFutureForOwner(ownerId, now);
                 break;
             case CURRENT:
-                found = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(
-                        ownerId,
-                        now,
-                        now
-                );
+                found = bookingRepository.getCurrentForOwner(ownerId, now);
                 break;
         }
 

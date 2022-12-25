@@ -160,12 +160,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private boolean isUserRealBooker(long userId, long itemId) {
-        return bookingRepository.countByItemIdAndBookerIdAndStatusAndEndBefore(
-                itemId,
-                userId,
-                BookingStatus.APPROVED,
-                LocalDateTime.now()
-        ) > 0;
+         Integer count = bookingRepository.getFinishedCount(userId, itemId, LocalDateTime.now());
+         return (count == null) ? false : count > 0;
     }
 
     private List<Comment> getComments(long itemId) {
@@ -173,10 +169,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Booking getLastBooking(long itemId) {
-        return bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(itemId, LocalDateTime.now());
+        return bookingRepository.getLastForItem(itemId, LocalDateTime.now());
     }
 
     private Booking getNextBooking(long itemId) {
-        return bookingRepository.getFirstByItemIdAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now());
+        return bookingRepository.getNextForItem(itemId, LocalDateTime.now());
     }
 }
