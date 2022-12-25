@@ -48,7 +48,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto get(long id) {
         return itemMapper.toDto(
-                itemRepository.require(id)
+                itemRepository.require(id),
+                getComments(id)
         );
     }
 
@@ -56,7 +57,10 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getOwned(long ownerId) {
         return itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId)
                 .stream()
-                .map(itemMapper::toDto)
+                .map(item -> itemMapper.toDto(
+                        item,
+                        getComments(item.getId())
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -148,5 +152,9 @@ public class ItemServiceImpl implements ItemService {
                 BookingStatus.APPROVED,
                 LocalDateTime.now()
         ) > 0;
+    }
+
+    private List<Comment> getComments(long itemId) {
+        return commentRepository.findAllByItemIdOrderByCreatedDesc(itemId);
     }
 }
