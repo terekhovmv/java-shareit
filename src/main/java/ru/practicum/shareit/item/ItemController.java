@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.ShareItAppConsts;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentUpdateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -20,14 +21,14 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ItemDto get(
-            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @PathVariable long id
     ) {
         return service.get(callerId, id);
     }
 
     @GetMapping
-    public List<ItemDto> getOwned(@RequestHeader("X-Sharer-User-Id") long callerId) {
+    public List<ItemDto> getOwned(@RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId) {
         return service.getOwned(callerId);
     }
 
@@ -38,7 +39,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto create(
-            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @Valid @RequestBody ItemUpdateDto dto
     ) {
         return service.create(callerId, dto);
@@ -46,7 +47,7 @@ public class ItemController {
 
     @PatchMapping("/{id}")
     public ItemDto update(
-            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @PathVariable long id,
             @RequestBody ItemUpdateDto dto
     ) {
@@ -55,7 +56,7 @@ public class ItemController {
 
     @PostMapping("/{id}/comment")
     public CommentDto addComment(
-            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @PathVariable long id,
             @Valid @RequestBody CommentUpdateDto dto
     ) {

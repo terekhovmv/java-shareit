@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.ShareItAppConsts;
 import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingUpdateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -20,7 +21,7 @@ public class BookingController {
 
     @PostMapping
     public BookingDto create(
-            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @Valid @RequestBody BookingUpdateDto dto
     ) {
         return service.create(callerId, dto);
@@ -28,7 +29,7 @@ public class BookingController {
 
     @PatchMapping("/{id}")
     public BookingDto setApproved(
-            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @PathVariable long id,
             @RequestParam("approved") boolean value
     ) {
@@ -37,7 +38,7 @@ public class BookingController {
 
     @GetMapping("/{id}")
     public BookingDto get(
-            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @PathVariable long id
     ) {
         return service.get(callerId, id);
@@ -45,7 +46,7 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getCreated(
-            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @RequestParam(defaultValue = "ALL") String state
     ) {
         return service.getCreated(callerId, parseBookingFilter(state));
@@ -53,7 +54,7 @@ public class BookingController {
 
     @GetMapping("/owner")
     public List<BookingDto> getForOwnedItems(
-            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @RequestParam(defaultValue = "ALL") String state
     ) {
         return service.getForOwnedItems(callerId, parseBookingFilter(state));
