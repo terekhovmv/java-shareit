@@ -19,7 +19,6 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -58,9 +57,8 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Booking archetype = new Booking();
-        //Removing milliseconds is needed to prevent rounding to next second on saving in DB
-        archetype.setStart(dto.getStart().truncatedTo(ChronoUnit.SECONDS));
-        archetype.setEnd(dto.getEnd().truncatedTo(ChronoUnit.SECONDS));
+        archetype.setStart(dto.getStart());
+        archetype.setEnd(dto.getEnd());
         archetype.setItem(item);
         archetype.setBooker(caller);
         archetype.setStatus(BookingStatus.WAITING);
