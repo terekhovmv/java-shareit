@@ -18,32 +18,32 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> getAllForBooker(long bookerId);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.status = ?2 ORDER BY b.start DESC")
-    List<Booking> getInStatusForBooker(long bookerId, BookingStatus status);
+    List<Booking> getAllByStatusForBooker(long bookerId, BookingStatus status);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.start <= ?2 AND b.end >= ?2 ORDER BY b.start DESC")
-    List<Booking> getCurrentForBooker(long bookerId, LocalDateTime now);
+    List<Booking> getAllCurrentForBooker(long bookerId, LocalDateTime now);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.end < ?2 ORDER BY b.start DESC")
-    List<Booking> getPastForBooker(long bookerId, LocalDateTime now);
+    List<Booking> getAllPastForBooker(long bookerId, LocalDateTime now);
 
     @Query("SELECT b FROM Booking b WHERE b.booker.id = ?1 AND b.start > ?2 ORDER BY b.start DESC")
-    List<Booking> getFutureForBooker(long bookerId, LocalDateTime now);
+    List<Booking> getAllFutureForBooker(long bookerId, LocalDateTime now);
 
 
     @Query("SELECT b FROM Booking b WHERE b.item.owner.id = ?1 ORDER BY b.start DESC")
     List<Booking> getAllForOwner (long bookerId);
 
     @Query("SELECT b FROM Booking b WHERE b.item.owner.id = ?1 AND b.status = ?2 ORDER BY b.start DESC")
-    List<Booking> getInStatusForOwner (long bookerId, BookingStatus status);
+    List<Booking> getAllByStatusForOwner(long bookerId, BookingStatus status);
 
     @Query("SELECT b FROM Booking b WHERE b.item.owner.id = ?1 AND b.start <= ?2 AND b.end >= ?2 ORDER BY b.start DESC")
-    List<Booking> getCurrentForOwner (long bookerId, LocalDateTime now);
+    List<Booking> getAllCurrentForOwner(long bookerId, LocalDateTime now);
 
     @Query("SELECT b FROM Booking b WHERE b.item.owner.id = ?1 AND b.end < ?2 ORDER BY b.start DESC")
-    List<Booking> getPastForOwner (long bookerId, LocalDateTime now);
+    List<Booking> getAllPastForOwner(long bookerId, LocalDateTime now);
 
     @Query("SELECT b FROM Booking b WHERE b.item.owner.id = ?1 AND b.start > ?2 ORDER BY b.start DESC")
-    List<Booking> getFutureForOwner (long bookerId, LocalDateTime now);
+    List<Booking> getAllFutureForOwner(long bookerId, LocalDateTime now);
 
 
     @Query("SELECT b FROM Booking b WHERE b.item.id = ?1 AND b.end < ?2 ORDER BY b.end DESC")

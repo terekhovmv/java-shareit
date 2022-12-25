@@ -12,15 +12,15 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
         return findById(id).orElseThrow(() -> new NotFoundException("Unable to find the item #" + id));
     }
 
-    @Query("SELECT it FROM Item it WHERE it.owner.id = ?1 ORDER BY it.id ASC")
-    List<Item> getOwned(long userId);
+    @Query("SELECT i FROM Item i WHERE i.owner.id = ?1 ORDER BY i.id ASC")
+    List<Item> getAllOwned(long userId);
 
     @Query(
-            "SELECT it FROM Item it " +
-            "WHERE ( " +
-                "UPPER(it.name) LIKE UPPER(CONCAT('%', ?1, '%')) " +
-                "OR UPPER(it.description) LIKE UPPER(CONCAT('%', ?1, '%')) " +
-            ") AND it.available = true"
+            "SELECT i FROM Item i " +
+            "WHERE (" +
+                "UPPER(i.name) LIKE UPPER(CONCAT('%', ?1, '%')) " +
+                "OR UPPER(i.description) LIKE UPPER(CONCAT('%', ?1, '%')) " +
+            ") AND i.available = true"
     )
-    List<Item> getAvailableWithText(String text);
+    List<Item> getAllAvailableWithText(String text);
 }

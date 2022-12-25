@@ -126,19 +126,19 @@ public class BookingServiceImpl implements BookingService {
                 found = bookingRepository.getAllForBooker(bookerId);
                 break;
             case WAITING:
-                found = bookingRepository.getInStatusForBooker(bookerId, BookingStatus.WAITING);
+                found = bookingRepository.getAllByStatusForBooker(bookerId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                found = bookingRepository.getInStatusForBooker(bookerId, BookingStatus.REJECTED);
+                found = bookingRepository.getAllByStatusForBooker(bookerId, BookingStatus.REJECTED);
                 break;
             case PAST:
-                found = bookingRepository.getPastForBooker(bookerId, now);
+                found = bookingRepository.getAllPastForBooker(bookerId, now);
                 break;
             case FUTURE:
-                found = bookingRepository.getFutureForBooker(bookerId, now);
+                found = bookingRepository.getAllFutureForBooker(bookerId, now);
                 break;
             case CURRENT:
-                found = bookingRepository.getCurrentForBooker(bookerId, now);
+                found = bookingRepository.getAllCurrentForBooker(bookerId, now);
                 break;
         }
 
@@ -158,19 +158,19 @@ public class BookingServiceImpl implements BookingService {
                 found = bookingRepository.getAllForOwner(ownerId);
                 break;
             case WAITING:
-                found = bookingRepository.getInStatusForOwner(ownerId, BookingStatus.WAITING);
+                found = bookingRepository.getAllByStatusForOwner(ownerId, BookingStatus.WAITING);
                 break;
             case REJECTED:
-                found = bookingRepository.getInStatusForOwner(ownerId, BookingStatus.REJECTED);
+                found = bookingRepository.getAllByStatusForOwner(ownerId, BookingStatus.REJECTED);
                 break;
             case PAST:
-                found = bookingRepository.getPastForOwner(ownerId, now);
+                found = bookingRepository.getAllPastForOwner(ownerId, now);
                 break;
             case FUTURE:
-                found = bookingRepository.getFutureForOwner(ownerId, now);
+                found = bookingRepository.getAllFutureForOwner(ownerId, now);
                 break;
             case CURRENT:
-                found = bookingRepository.getCurrentForOwner(ownerId, now);
+                found = bookingRepository.getAllCurrentForOwner(ownerId, now);
                 break;
         }
 

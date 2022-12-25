@@ -66,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getOwned(long ownerId) {
-        return itemRepository.getOwned(ownerId)
+        return itemRepository.getAllOwned(ownerId)
                 .stream()
                 .map(item -> itemMapper.toDto(
                         item,
@@ -83,7 +83,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        return itemRepository.getAvailableWithText(text)
+        return itemRepository.getAllAvailableWithText(text)
                 .stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
@@ -164,7 +164,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private List<Comment> getComments(long itemId) {
-        return commentRepository.getItemComments(itemId);
+        return commentRepository.getAllForItem(itemId);
     }
 
     private Booking getLastBooking(long itemId) {
