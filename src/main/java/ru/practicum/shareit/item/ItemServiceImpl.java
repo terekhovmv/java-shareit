@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.ForbiddenAccessException;
 import ru.practicum.shareit.item.dto.*;
@@ -46,7 +47,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto get(long id) {
+    public ItemDto get(long callerId, long id) {
+        Item item = itemRepository.require(id);
+
+        if (Objects.equals(callerId, item.getOwner().getId())) {
+            return itemMapper.toDto(
+                    item,
+                    getComments(id),
+                    getLastBooking(id),
+                    getNextBooking(id)
+            );
+        }
+
         return itemMapper.toDto(
                 itemRepository.require(id),
                 getComments(id)
@@ -59,7 +71,9 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .map(item -> itemMapper.toDto(
                         item,
-                        getComments(item.getId())
+                        getComments(item.getId()),
+                        getLastBooking(item.getId()),
+                        getNextBooking(item.getId())
                 ))
                 .collect(Collectors.toList());
     }
@@ -156,5 +170,13 @@ public class ItemServiceImpl implements ItemService {
 
     private List<Comment> getComments(long itemId) {
         return commentRepository.findAllByItemIdOrderByCreatedDesc(itemId);
+    }
+
+    private Booking getLastBooking(long itemId) {
+        return bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(itemId, LocalDateTime.now());
+    }
+
+    private Booking getNextBooking(long itemId) {
+        return bookingRepository.getFirstByItemIdAndStartAfterOrderByStartAsc(itemId, LocalDateTime.now());
     }
 }

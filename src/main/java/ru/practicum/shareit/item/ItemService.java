@@ -8,7 +8,7 @@ import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import java.util.List;
 
 public interface ItemService {
-    ItemDto get(long id);
+    ItemDto get(long callerId, long id);
 
     List<ItemDto> getOwned(long ownerId);
 

@@ -11,4 +11,6 @@ public class ItemDto {
     String description;
     Boolean available;
     List<CommentDto> comments;
+    BookingBriefDto lastBooking;
+    BookingBriefDto nextBooking;
 }
