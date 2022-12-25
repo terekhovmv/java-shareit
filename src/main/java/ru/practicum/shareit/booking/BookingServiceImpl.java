@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.exceptions.ForbiddenAccessException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.exceptions.UnavailableException;
 import ru.practicum.shareit.item.exceptions.UnavailableForOwnerException;
@@ -56,11 +57,34 @@ public class BookingServiceImpl implements BookingService {
         archetype.setStatus(BookingStatus.WAITING);
 
         Booking created = bookingRepository.save(archetype);
-        log.info("The booking of item #{} (owned by user #{}) was successfully created for user #{} ",
+        log.info(
+                "The booking of item #{} (owned by user #{}) was successfully created for user #{}",
                 item.getId(),
                 item.getOwner().getId(),
                 callerId
         );
         return bookingMapper.toBookingDto(created);
+    }
+
+    @Override
+    public BookingDto setApproved(long callerId, long id, boolean value) {
+        userRepository.require(callerId);
+        Booking booking = bookingRepository.require(id);
+        if (!Objects.equals(callerId, booking.getItem().getOwner().getId())) {
+            throw new ForbiddenAccessException("Unauthorized access to booking #" + id);
+        }
+
+        BookingStatus prevStatus = booking.getStatus();
+        BookingStatus newStatus = value ? BookingStatus.APPROVED : BookingStatus.REJECTED;
+        booking.setStatus(newStatus);
+
+        Booking updated = bookingRepository.save(booking);
+        log.debug(
+                "The status booking of #{} was changed from {} to {}",
+                id,
+                prevStatus,
+                newStatus
+        );
+        return bookingMapper.toBookingDto(updated);
     }
 }

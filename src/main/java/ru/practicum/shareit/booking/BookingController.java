@@ -22,4 +22,13 @@ public class BookingController {
     ) {
         return service.book(callerId, bookingRequestDto);
     }
+
+    @PatchMapping("/{id}")
+    public BookingDto setApproved(
+            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @PathVariable long id,
+            @RequestParam("approved") boolean value
+    ) {
+        return service.setApproved(callerId, id, value);
+    }
 }
