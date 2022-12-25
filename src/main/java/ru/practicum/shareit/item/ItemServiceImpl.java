@@ -169,7 +169,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private List<Comment> getComments(long itemId) {
-        return commentRepository.findAllByItemIdOrderByCreatedDesc(itemId);
+        return commentRepository.getItemComments(itemId);
     }
 
     private Booking getLastBooking(long itemId) {
