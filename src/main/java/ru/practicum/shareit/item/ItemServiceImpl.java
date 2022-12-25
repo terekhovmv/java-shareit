@@ -67,7 +67,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getOwned(long ownerId) {
-        return itemRepository.findAllByOwnerIdOrderByIdAsc(ownerId)
+        return itemRepository.getOwned(ownerId)
                 .stream()
                 .map(item -> itemMapper.toDto(
                         item,
@@ -84,7 +84,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
 
-        return itemRepository.findAllAvailableByText(text)
+        return itemRepository.getAvailableWithText(text)
                 .stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
