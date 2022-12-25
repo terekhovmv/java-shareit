@@ -159,8 +159,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private boolean isUserRealBooker(long userId, long itemId) {
-         Integer count = bookingRepository.getFinishedCount(userId, itemId, LocalDateTime.now());
-         return (count != null) && (count > 0);
+        Integer count = bookingRepository.getFinishedCount(userId, itemId, LocalDateTime.now());
+        return (count != null) && (count > 0);
     }
 
     private List<Comment> getComments(long itemId) {

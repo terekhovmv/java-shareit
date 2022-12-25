@@ -1,10 +1,9 @@
 package ru.practicum.shareit.booking.dto.annotations;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-
 import ru.practicum.shareit.booking.dto.BookingUpdateDto;
 
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
 
 public class BookingPeriodValidator implements ConstraintValidator<ValidBookingPeriod, BookingUpdateDto> {

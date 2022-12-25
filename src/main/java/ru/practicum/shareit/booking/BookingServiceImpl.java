@@ -2,18 +2,18 @@ package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingUpdateDto;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.exceptions.AlreadyApprovedBookingException;
+import ru.practicum.shareit.booking.exceptions.UnableToCreateBookingException;
 import ru.practicum.shareit.booking.exceptions.UnableToManageBookingException;
+import ru.practicum.shareit.booking.exceptions.UnavailableForBookingException;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
-import ru.practicum.shareit.booking.exceptions.UnavailableForBookingException;
-import ru.practicum.shareit.booking.exceptions.UnableToCreateBookingException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -105,9 +105,8 @@ public class BookingServiceImpl implements BookingService {
         userRepository.require(callerId);
         Booking booking = bookingRepository.require(id);
 
-        if (
-                !Objects.equals(callerId, booking.getBooker().getId()) &&
-                !Objects.equals(callerId, booking.getItem().getOwner().getId())
+        if (!Objects.equals(callerId, booking.getBooker().getId())
+                && !Objects.equals(callerId, booking.getItem().getOwner().getId())
         ) {
             throw new NotFoundException("Unable to access booking #" + id);
         }

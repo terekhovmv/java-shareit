@@ -2,9 +2,9 @@ package ru.practicum.shareit.booking;
 
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.ShareItAppConsts;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingUpdateDto;
-import ru.practicum.shareit.booking.dto.BookingDto;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
