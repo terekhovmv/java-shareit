@@ -21,6 +21,7 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.booking.exceptions.UnavailableForBookingException;
 import ru.practicum.shareit.booking.exceptions.UnableToCreateBookingException;
+import ru.practicum.shareit.item.exceptions.NotRealBookerException;
 import ru.practicum.shareit.user.UserController;
 
 @Slf4j
@@ -61,7 +62,8 @@ public class ErrorHandler {
             MissingRequestHeaderException.class,
 
             AlreadyApprovedBookingException.class,
-            UnavailableForBookingException.class
+            UnavailableForBookingException.class,
+            NotRealBookerException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto handleValidationException(Throwable throwable) {

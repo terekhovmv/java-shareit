@@ -2,13 +2,17 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.ForbiddenAccessException;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.exceptions.NotRealBookerException;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,16 +23,25 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final CommentRepository commentRepository;
+    private final BookingRepository bookingRepository;
     private final ItemMapper itemMapper;
+    private final CommentMapper commentMapper;
 
     public ItemServiceImpl(
             UserRepository userRepository,
             ItemRepository itemRepository,
-            ItemMapper itemMapper
+            CommentRepository commentRepository,
+            BookingRepository bookingRepository,
+            ItemMapper itemMapper,
+            CommentMapper commentMapper
     ) {
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
+        this.commentRepository = commentRepository;
+        this.bookingRepository = bookingRepository;
         this.itemMapper = itemMapper;
+        this.commentMapper = commentMapper;
     }
 
     @Override
@@ -89,5 +102,39 @@ public class ItemServiceImpl implements ItemService {
         Item updated = itemRepository.save(toUpdate);
         log.info("Item #{} was successfully updated by user #{}", updated.getId(), callerId);
         return itemMapper.toItemDto(updated);
+    }
+
+    @Override
+    public CommentDto addComment(long authorId, long id, CommentRequestDto commentRequestDto) {
+        if (!isUserRealBooker(authorId, id)) {
+            throw new NotRealBookerException("Comment author is not the real booker of the item");
+        }
+
+        User author = userRepository.require(authorId);
+        Item item = itemRepository.require(id);
+
+        Comment archetype = new Comment();
+        archetype.setText(commentRequestDto.getText());
+        archetype.setAuthor(author);
+        archetype.setItem(item);
+        archetype.setCreated(LocalDateTime.now());
+
+        Comment created = commentRepository.save(archetype);
+        log.info(
+                "Comment #{} about item #{} from user #{} was successfully added",
+                created.getId(),
+                authorId,
+                id
+        );
+        return commentMapper.toCommentDto(created);
+    }
+
+    private boolean isUserRealBooker(long userId, long itemId) {
+        return bookingRepository.countByItemIdAndBookerIdAndStatusAndEndBefore(
+                itemId,
+                userId,
+                BookingStatus.APPROVED,
+                LocalDateTime.now()
+        ) > 0;
     }
 }
