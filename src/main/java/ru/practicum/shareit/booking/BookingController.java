@@ -46,14 +46,24 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getCreated(
             @RequestHeader("X-Sharer-User-Id") long callerId,
-            @RequestParam(name = "state", defaultValue = "ALL") String state
+            @RequestParam(defaultValue = "ALL") String state
     ) {
-        BookingFilter filter;
+        return service.getCreated(callerId, parseBookingFilter(state));
+    }
+
+    @GetMapping("/owner")
+    public List<BookingDto> getForOwnedItems(
+            @RequestHeader("X-Sharer-User-Id") long callerId,
+            @RequestParam(defaultValue = "ALL") String state
+    ) {
+        return service.getForOwnedItems(callerId, parseBookingFilter(state));
+    }
+
+    private BookingFilter parseBookingFilter(String value) {
         try {
-            filter = BookingFilter.valueOf(state);
+            return BookingFilter.valueOf(value);
         } catch (IllegalArgumentException exception) {
-            throw new ValidationException("Unknown state: " + state);
+            throw new ValidationException("Unknown state: " + value);
         }
-        return service.getCreated(callerId, filter);
     }
 }

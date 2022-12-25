@@ -156,4 +156,52 @@ public class BookingServiceImpl implements BookingService {
                 .map(bookingMapper::toBookingDto)
                 .collect(Collectors.toList());
     }
+
+    public List<BookingDto> getForOwnedItems(long ownerId, BookingFilter filter) {
+        userRepository.require(ownerId);
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Booking> found = null;
+        switch (filter) {
+            case ALL:
+                found = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(ownerId);
+                break;
+            case WAITING:
+                found = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(
+                        ownerId,
+                        BookingStatus.WAITING
+                );
+                break;
+            case REJECTED:
+                found = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(
+                        ownerId,
+                        BookingStatus.REJECTED
+                );
+                break;
+            case PAST:
+                found = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(
+                        ownerId,
+                        now
+                );
+                break;
+            case FUTURE:
+                found = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(
+                        ownerId,
+                        now
+                );
+                break;
+            case CURRENT:
+                found = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(
+                        ownerId,
+                        now,
+                        now
+                );
+                break;
+        }
+
+        return found
+                .stream()
+                .map(bookingMapper::toBookingDto)
+                .collect(Collectors.toList());
+    }
 }

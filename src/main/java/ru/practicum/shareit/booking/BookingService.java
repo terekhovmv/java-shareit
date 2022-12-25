@@ -13,5 +13,7 @@ public interface BookingService {
 
     BookingDto findById(long callerId, long id);
 
-    List<BookingDto> getCreated(long callerId, BookingFilter filter);
+    List<BookingDto> getCreated(long creatorId, BookingFilter filter);
+
+    List<BookingDto> getForOwnedItems(long ownerId, BookingFilter filter);
 }
