@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -16,7 +17,10 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -102,5 +106,54 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return bookingMapper.toBookingDto(booking);
+    }
+
+    @Override
+    public List<BookingDto> getCreated(long bookerId, BookingFilter filter) {
+        userRepository.require(bookerId);
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Booking> found = null;
+        switch (filter) {
+            case ALL:
+                found = bookingRepository.findAllByBookerIdOrderByStartDesc(bookerId);
+                break;
+            case WAITING:
+                found = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
+                        bookerId,
+                        BookingStatus.WAITING
+                );
+                break;
+            case REJECTED:
+                found = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(
+                        bookerId,
+                        BookingStatus.REJECTED
+                );
+                break;
+            case PAST:
+                found = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(
+                        bookerId,
+                        now
+                );
+                break;
+            case FUTURE:
+                found = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(
+                        bookerId,
+                        now
+                );
+                break;
+            case CURRENT:
+                found = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(
+                        bookerId,
+                        now,
+                        now
+                );
+                break;
+        }
+
+        return found
+                .stream()
+                .map(bookingMapper::toBookingDto)
+                .collect(Collectors.toList());
     }
 }
