@@ -2,51 +2,38 @@ package ru.practicum.shareit.user;
 
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
     public final UserService service;
-    private final UserMapper mapper;
 
-    public UserController(UserService service, UserMapper mapper) {
+    public UserController(UserService service) {
         this.service = service;
-        this.mapper = mapper;
     }
 
     @GetMapping("/{id}")
-    public UserDto findById(@PathVariable long id) {
-        return mapper.toUserDto(
-                service.findById(id)
-        );
+    public UserDto get(@PathVariable long id) {
+        return service.get(id);
     }
 
     @GetMapping
-    public List<UserDto> findAll() {
-        return service
-                .findAll()
-                .stream()
-                .map(mapper::toUserDto)
-                .collect(Collectors.toList());
+    public List<UserDto> getAll() {
+        return service.getAll();
     }
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody UserDto archetypeDto) {
-        return mapper.toUserDto(
-                service.create(mapper.toUser(archetypeDto))
-        );
+    public UserDto create(@Valid @RequestBody UserUpdateDto dto) {
+        return service.create(dto);
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@PathVariable long id, @RequestBody UserDto patchDto) {
-        return mapper.toUserDto(
-                service.update(id, mapper.toUser(patchDto))
-        );
+    public UserDto update(@PathVariable long id, @RequestBody UserUpdateDto dto) {
+        return service.update(id, dto);
     }
 
     @DeleteMapping("/{id}")

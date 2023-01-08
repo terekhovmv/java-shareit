@@ -1,42 +1,18 @@
 package ru.practicum.shareit.user;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 
 import java.util.List;
 
-@Slf4j
-@Service
-public class UserService {
-    private final UserStorage storage;
+public interface UserService {
+    UserDto get(long id);
 
-    public UserService(UserStorage storage) {
-        this.storage = storage;
-    }
+    List<UserDto> getAll();
 
-    public User findById(long id) {
-        return storage.findById(id);
-    }
+    UserDto create(UserUpdateDto dto);
 
-    public List<User> findAll() {
-        return storage.findAll();
-    }
+    UserDto update(long id, UserUpdateDto dto);
 
-    public User create(User archetype) {
-        User created = storage.create(archetype);
-        log.info("User {} was successfully added with id {}", created.getName(), created.getId());
-        return created;
-    }
-
-    public User update(long id, User patch) {
-        User updated = storage.update(id, patch);
-        log.info("User #{} was successfully updated", updated.getId());
-        return updated;
-    }
-
-    public void delete(long id) {
-        storage.delete(id);
-        log.info("User #{} was successfully updated", id);
-    }
+    void delete(long id);
 }
