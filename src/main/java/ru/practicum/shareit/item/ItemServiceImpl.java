@@ -14,9 +14,7 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -50,29 +48,47 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.require(id);
 
         if (Objects.equals(callerId, item.getOwner().getId())) {
+            LocalDateTime now = LocalDateTime.now();
             return itemMapper.toDto(
                     item,
-                    getComments(id),
-                    getLastBooking(id),
-                    getNextBooking(id)
+                    commentRepository.getAllByItemIdOrderByCreatedDesc(id),
+                    bookingRepository.getLastForItem(id, now),
+                    bookingRepository.getNextForItem(id, now)
             );
         }
 
         return itemMapper.toDto(
-                itemRepository.require(id),
-                getComments(id)
+                item,
+                commentRepository.getAllByItemIdOrderByCreatedDesc(id)
         );
     }
 
     @Override
     public List<ItemDto> getOwned(long ownerId) {
-        return itemRepository.getAllOwned(ownerId)
+        List<Item> items = itemRepository.getAllOwned(ownerId);
+        List<Long> itemIds = items
+                .stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+
+        Map<Long, List<Comment>> commentsByItems =
+                commentRepository.getAllByItemIdInOrderByCreatedDesc(itemIds)
+                        .stream()
+                        .collect(Collectors.groupingBy(c -> c.getItem().getId()));
+
+        Map<Long, List<Booking>> bookingsByItems =
+                bookingRepository.getAllByItemIdIn(itemIds)
+                        .stream()
+                        .collect(Collectors.groupingBy(b -> b.getItem().getId()));
+
+        LocalDateTime now = LocalDateTime.now();
+        return items
                 .stream()
                 .map(item -> itemMapper.toDto(
                         item,
-                        getComments(item.getId()),
-                        getLastBooking(item.getId()),
-                        getNextBooking(item.getId())
+                        commentsByItems.get(item.getId()),
+                        findLastBooking(bookingsByItems.get(item.getId()), now),
+                        findNextBooking(bookingsByItems.get(item.getId()), now)
                 ))
                 .collect(Collectors.toList());
     }
@@ -163,15 +179,25 @@ public class ItemServiceImpl implements ItemService {
         return (count != null) && (count > 0);
     }
 
-    private List<Comment> getComments(long itemId) {
-        return commentRepository.getAllForItem(itemId);
+    private Booking findLastBooking(List<Booking> bookings, LocalDateTime now) {
+        if (bookings == null) {
+            return null;
+        }
+        return bookings
+                .stream()
+                .filter(b -> b.getEnd().isBefore(now))
+                .max(Comparator.comparing(Booking::getEnd))
+                .orElse(null);
     }
 
-    private Booking getLastBooking(long itemId) {
-        return bookingRepository.getLastForItem(itemId, LocalDateTime.now());
-    }
-
-    private Booking getNextBooking(long itemId) {
-        return bookingRepository.getNextForItem(itemId, LocalDateTime.now());
+    private Booking findNextBooking(List<Booking> bookings, LocalDateTime now) {
+        if (bookings == null) {
+            return null;
+        }
+        return bookings
+                .stream()
+                .filter(b -> b.getStart().isAfter(now))
+                .min(Comparator.comparing(Booking::getStart))
+                .orElse(null);
     }
 }

@@ -30,13 +30,15 @@ public class ItemMapper {
     public ItemDto toDto(Item from, List<Comment> comments) {
         ItemDto mapped = toDto(from);
 
-        mapped.setComments(
-                comments
-                        .stream()
-                        .map(commentMapper::toDto)
-                        .collect(Collectors.toList())
+        if (comments != null) {
+            mapped.setComments(
+                    comments
+                            .stream()
+                            .map(commentMapper::toDto)
+                            .collect(Collectors.toList())
 
-        );
+            );
+        }
 
         return mapped;
     }

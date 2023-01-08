@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -45,13 +46,19 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b FROM Booking b WHERE b.item.owner.id = ?1 AND b.start > ?2 ORDER BY b.start DESC")
     List<Booking> getAllFutureForOwner(long bookerId, LocalDateTime now);
 
+    Booking getFirstByItemIdAndEndBeforeOrderByEndDesc(long itemId, LocalDateTime now);
 
-    @Query("SELECT b FROM Booking b WHERE b.item.id = ?1 AND b.end < ?2 ORDER BY b.end DESC")
-    Booking getLastForItem(long itemId, LocalDateTime now);
+    Booking getFirstByItemIdAndStartAfterOrderByStartAsc(long itemId, LocalDateTime now);
 
-    @Query("SELECT b FROM Booking b WHERE b.item.id = ?1 AND b.start > ?2 ORDER BY b.start ASC")
-    Booking getNextForItem(long itemId, LocalDateTime now);
+    default Booking getLastForItem(long itemId, LocalDateTime now) {
+        return getFirstByItemIdAndEndBeforeOrderByEndDesc(itemId, now);
+    }
 
+    default Booking getNextForItem(long itemId, LocalDateTime now) {
+        return getFirstByItemIdAndStartAfterOrderByStartAsc(itemId, now);
+    }
+
+    List<Booking> getAllByItemIdIn(Collection<Long> itemIds);
 
     @Query(
             "SELECT COUNT (b) FROM Booking b " +
