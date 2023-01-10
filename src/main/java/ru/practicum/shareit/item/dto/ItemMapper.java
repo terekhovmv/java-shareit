@@ -22,6 +22,7 @@ public class ItemMapper {
         mapped.setId(from.getId());
         mapped.setName(from.getName());
         mapped.setDescription(from.getDescription());
+        mapped.setRequestId(from.getRequestId());
         mapped.setAvailable(from.getAvailable());
 
         return mapped;

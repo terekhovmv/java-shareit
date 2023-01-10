@@ -114,7 +114,7 @@ public class ItemServiceImpl implements ItemService {
         archetype.setDescription(dto.getDescription());
         archetype.setAvailable(dto.getAvailable());
         archetype.setOwner(owner);
-        archetype.setRequestId(null);
+        archetype.setRequestId(dto.getRequestId());
 
         Item created = itemRepository.save(archetype);
         log.info(

@@ -13,4 +13,5 @@ public class ItemUpdateDto {
     String description;
     @NotNull
     Boolean available;
+    Long requestId;
 }
