@@ -9,7 +9,6 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.booking.BookingController;
 import ru.practicum.shareit.booking.exceptions.AlreadyApprovedBookingException;
 import ru.practicum.shareit.booking.exceptions.UnableToCreateBookingException;
 import ru.practicum.shareit.booking.exceptions.UnableToManageBookingException;
@@ -17,18 +16,12 @@ import ru.practicum.shareit.booking.exceptions.UnavailableForBookingException;
 import ru.practicum.shareit.errors.dto.ErrorResponseDto;
 import ru.practicum.shareit.exceptions.ForbiddenAccessException;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.exceptions.NotRealBookerException;
-import ru.practicum.shareit.user.UserController;
 
 import javax.validation.ValidationException;
 
 @Slf4j
-@RestControllerAdvice(assignableTypes = {
-        UserController.class,
-        ItemController.class,
-        BookingController.class
-})
+@RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
