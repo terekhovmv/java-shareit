@@ -27,14 +27,14 @@ public final class ItemRequestMapper {
     public ItemRequestDto toDto(ItemRequest from, List<Item> items) {
         ItemRequestDto mapped = toDto(from);
 
-        if (items != null) {
-            mapped.setItems(
-                    items
-                            .stream()
-                            .map(itemMapper::toDto)
-                            .collect(Collectors.toList())
-            );
-        }
+        mapped.setItems(
+                items != null
+                ? items
+                        .stream()
+                        .map(itemMapper::toDto)
+                        .collect(Collectors.toList())
+                : List.of()
+        );
 
         return mapped;
     }

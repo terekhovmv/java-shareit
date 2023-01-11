@@ -6,6 +6,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestUpdateDto;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/requests")
@@ -22,5 +23,13 @@ public class ItemRequestController {
             @Valid @RequestBody ItemRequestUpdateDto dto
     ) {
         return service.create(callerId, dto);
+    }
+
+
+    @GetMapping
+    public List<ItemRequestDto> getCreated(
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId
+    ) {
+        return service.getCreated(callerId);
     }
 }

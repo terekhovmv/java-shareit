@@ -3,6 +3,7 @@ package ru.practicum.shareit.request;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.dto.ItemRequestUpdateDto;
@@ -11,6 +12,9 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -50,5 +54,29 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 created.getId()
         );
         return mapper.toDto(created);
+    }
+
+    @Override
+    public List<ItemRequestDto> getCreated(long creatorId) {
+        userRepository.require(creatorId);
+
+        List<ItemRequest> requests = itemRequestRepository.getCreated(creatorId);
+        List<Long> requestIds = requests
+                .stream()
+                .map(ItemRequest::getId)
+                .collect(Collectors.toList());
+
+        Map<Long, List<Item>> itemsByRequests =
+                itemRepository.getAllByRequestIdIn(requestIds)
+                        .stream()
+                        .collect(Collectors.groupingBy(Item::getRequestId));
+
+        return requests
+                .stream()
+                .map(request -> mapper.toDto(
+                        request,
+                        itemsByRequests.get(request.getId())
+                ))
+                .collect(Collectors.toList());
     }
 }
