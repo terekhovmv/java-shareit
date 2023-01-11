@@ -65,6 +65,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getOwned(long ownerId) {
+        userRepository.require(ownerId);
+
         List<Item> items = itemRepository.getAllOwned(ownerId);
         List<Long> itemIds = items
                 .stream()
