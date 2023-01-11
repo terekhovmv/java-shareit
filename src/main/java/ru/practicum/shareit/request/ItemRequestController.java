@@ -25,6 +25,13 @@ public class ItemRequestController {
         return service.create(callerId, dto);
     }
 
+    @GetMapping("/{id}")
+    public ItemRequestDto get(
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
+            @PathVariable long id
+    ) {
+        return service.get(callerId, id);
+    }
 
     @GetMapping
     public List<ItemRequestDto> getCreated(

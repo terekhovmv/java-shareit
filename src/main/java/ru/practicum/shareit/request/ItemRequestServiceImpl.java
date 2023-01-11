@@ -57,6 +57,17 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
+    public ItemRequestDto get(long callerId, long id) {
+        userRepository.require(callerId);
+
+        ItemRequest request = itemRequestRepository.require(id);
+        return mapper.toDto(
+                itemRequestRepository.require(id),
+                itemRepository.getAllByRequestId(id)
+        );
+    }
+
+    @Override
     public List<ItemRequestDto> getCreated(long creatorId) {
         userRepository.require(creatorId);
 
