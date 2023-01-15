@@ -1,12 +1,10 @@
 package ru.practicum.shareit.request;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.pagination.RandomAccessPageRequest;
-import ru.practicum.shareit.pagination.RandomAccessParams;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.dto.ItemRequestUpdateDto;
@@ -80,15 +78,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public List<ItemRequestDto> getFromOtherUsers(long callerId, RandomAccessParams randomAccessParams) {
+    public List<ItemRequestDto> getFromOtherUsers(long callerId, Pageable pageable) {
         userRepository.require(callerId);
 
         return toDtos(
                 itemRequestRepository
-                        .getAllByRequesterIdNot(
-                                callerId,
-                                RandomAccessPageRequest.of(randomAccessParams, Sort.by(Sort.Direction.DESC, "created"))
-                        )
+                        .getAllByRequesterIdNot(callerId, pageable)
                         .getContent()
         );
     }

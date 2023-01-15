@@ -1,13 +1,15 @@
 package ru.practicum.shareit.request;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.ShareItAppConsts;
-import ru.practicum.shareit.pagination.dto.RandomAccessParamsDto;
+import ru.practicum.shareit.pagination.RandomAccessPageRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestUpdateDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -46,12 +48,12 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDto> getFromOtherUsers(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
-            @RequestParam(required = false) Integer from,
-            @RequestParam(required = false) Integer size
+            @RequestParam(defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) int size
     ) {
         return service.getFromOtherUsers(
                 callerId,
-                new RandomAccessParamsDto(from, size, ShareItAppConsts.DEFAULT_PAGE_SIZE)
+                RandomAccessPageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "created"))
         );
     }
 

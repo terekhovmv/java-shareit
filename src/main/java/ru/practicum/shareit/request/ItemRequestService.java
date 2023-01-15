@@ -1,6 +1,6 @@
 package ru.practicum.shareit.request;
 
-import ru.practicum.shareit.pagination.RandomAccessParams;
+import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestUpdateDto;
 
@@ -13,5 +13,5 @@ public interface ItemRequestService {
 
     List<ItemRequestDto> getCreated(long creatorId);
 
-    List<ItemRequestDto> getFromOtherUsers(long callerId, RandomAccessParams randomAccessParams);
+    List<ItemRequestDto> getFromOtherUsers(long callerId, Pageable pageable);
 }

@@ -3,7 +3,6 @@ package ru.practicum.shareit.booking;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFilter;
@@ -18,8 +17,6 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.pagination.RandomAccessPageRequest;
-import ru.practicum.shareit.pagination.RandomAccessParams;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -120,13 +117,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getCreated(long bookerId, BookingFilter filter, RandomAccessParams randomAccessParams) {
+    public List<BookingDto> getCreated(long bookerId, BookingFilter filter, Pageable pageable) {
         userRepository.require(bookerId);
         LocalDateTime now = LocalDateTime.now();
-        Pageable pageable = RandomAccessPageRequest.of(
-                randomAccessParams,
-                Sort.by(Sort.Direction.DESC, "start")
-        );
 
         Page<Booking> page = null;
         switch (filter) {
@@ -157,13 +150,9 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
-    public List<BookingDto> getForOwnedItems(long ownerId, BookingFilter filter, RandomAccessParams randomAccessParams) {
+    public List<BookingDto> getForOwnedItems(long ownerId, BookingFilter filter, Pageable pageable) {
         userRepository.require(ownerId);
         LocalDateTime now = LocalDateTime.now();
-        Pageable pageable = RandomAccessPageRequest.of(
-                randomAccessParams,
-                Sort.by(Sort.Direction.DESC, "start")
-        );
 
         Page<Booking> page = null;
         switch (filter) {

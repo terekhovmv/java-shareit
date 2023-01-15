@@ -21,10 +21,6 @@ public class RandomAccessPageRequest implements Pageable {
         this.sort = sort;
     }
 
-    public static Pageable of(RandomAccessParams params, Sort sort) {
-        return of(params.getFrom(), params.getSize(), sort);
-    }
-
     public static Pageable of(int offset, int limit, Sort sort) {
         return new RandomAccessPageRequest(offset, limit, sort);
     }

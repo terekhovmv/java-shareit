@@ -2,7 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
@@ -11,8 +11,6 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.exceptions.NotRealBookerException;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.pagination.RandomAccessPageRequest;
-import ru.practicum.shareit.pagination.RandomAccessParams;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -67,14 +65,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getOwned(long ownerId, RandomAccessParams randomAccessParams) {
+    public List<ItemDto> getOwned(long ownerId, Pageable pageable) {
         userRepository.require(ownerId);
 
         List<Item> items = itemRepository
-                .getAllByOwnerId(
-                        ownerId,
-                        RandomAccessPageRequest.of(randomAccessParams, Sort.by(Sort.Direction.ASC, "id"))
-                )
+                .getAllByOwnerId(ownerId, pageable)
                 .getContent();
 
         List<Long> itemIds = items
@@ -105,16 +100,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAvailableWithText(String text, RandomAccessParams randomAccessParams) {
+    public List<ItemDto> getAvailableWithText(String text, Pageable pageable) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
 
         return itemRepository
-                .getAllAvailableWithText(
-                        text,
-                        RandomAccessPageRequest.of(randomAccessParams, Sort.by(Sort.Direction.ASC, "id"))
-                )
+                .getAllAvailableWithText(text, pageable)
                 .getContent()
                 .stream()
                 .map(itemMapper::toDto)

@@ -1,14 +1,16 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.ShareItAppConsts;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingUpdateDto;
-import ru.practicum.shareit.pagination.dto.RandomAccessParamsDto;
+import ru.practicum.shareit.pagination.RandomAccessPageRequest;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -49,13 +51,13 @@ public class BookingController {
     public List<BookingDto> getCreated(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @RequestParam(defaultValue = "ALL") String state,
-            @RequestParam(required = false) Integer from,
-            @RequestParam(required = false) Integer size
+            @RequestParam(defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) int size
     ) {
         return service.getCreated(
                 callerId,
                 parseBookingFilter(state),
-                new RandomAccessParamsDto(from, size, ShareItAppConsts.DEFAULT_PAGE_SIZE)
+                RandomAccessPageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "start"))
         );
     }
 
@@ -63,13 +65,13 @@ public class BookingController {
     public List<BookingDto> getForOwnedItems(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @RequestParam(defaultValue = "ALL") String state,
-            @RequestParam(required = false) Integer from,
-            @RequestParam(required = false) Integer size
+            @RequestParam(defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) int size
     ) {
         return service.getForOwnedItems(
                 callerId,
                 parseBookingFilter(state),
-                new RandomAccessParamsDto(from, size, ShareItAppConsts.DEFAULT_PAGE_SIZE)
+                RandomAccessPageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "start"))
         );
     }
 

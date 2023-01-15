@@ -1,14 +1,16 @@
 package ru.practicum.shareit.item;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.ShareItAppConsts;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentUpdateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
-import ru.practicum.shareit.pagination.dto.RandomAccessParamsDto;
+import ru.practicum.shareit.pagination.RandomAccessPageRequest;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -31,24 +33,24 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> getOwned(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
-            @RequestParam(required = false) Integer from,
-            @RequestParam(required = false) Integer size
+            @RequestParam(defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) int size
     ) {
         return service.getOwned(
                 callerId,
-                new RandomAccessParamsDto(from, size, ShareItAppConsts.DEFAULT_PAGE_SIZE)
+                RandomAccessPageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"))
         );
     }
 
     @GetMapping("/search")
     public List<ItemDto> getAvailableWithText(
             @RequestParam("text") String text,
-            @RequestParam(required = false) Integer from,
-            @RequestParam(required = false) Integer size
+            @RequestParam(defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) int size
     ) {
         return service.getAvailableWithText(
                 text,
-                new RandomAccessParamsDto(from, size, ShareItAppConsts.DEFAULT_PAGE_SIZE)
+                RandomAccessPageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"))
         );
     }
 
