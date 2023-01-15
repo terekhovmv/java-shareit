@@ -8,14 +8,6 @@ public class RandomAccessPageRequest implements Pageable {
     private final int limit;
     private final Sort sort;
 
-    public static Pageable of(RandomAccessParams params, Sort sort) {
-        return of(params.getFrom(), params.getSize(), sort);
-    }
-
-    public static Pageable of(int offset, int limit, Sort sort) {
-        return new RandomAccessPageRequest(offset, limit, sort);
-    }
-
     protected RandomAccessPageRequest(int offset, int limit, Sort sort) {
         if (offset < 0) {
             throw new IllegalStateException("Offset must be greater than or equal to 0");
@@ -27,6 +19,14 @@ public class RandomAccessPageRequest implements Pageable {
         this.offset = offset;
         this.limit = limit;
         this.sort = sort;
+    }
+
+    public static Pageable of(RandomAccessParams params, Sort sort) {
+        return of(params.getFrom(), params.getSize(), sort);
+    }
+
+    public static Pageable of(int offset, int limit, Sort sort) {
+        return new RandomAccessPageRequest(offset, limit, sort);
     }
 
     @Override

@@ -12,7 +12,7 @@ public class RandomAccessParamsDto implements RandomAccessParams {
         validate(from, size);
 
         this.from = (from != null) ? from : 0;
-        this.size =  (size != null) ? size : defaultSize;
+        this.size = (size != null) ? size : defaultSize;
     }
 
     private static void validate(Integer offset, Integer size) {
