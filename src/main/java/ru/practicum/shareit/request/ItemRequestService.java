@@ -1,5 +1,6 @@
 package ru.practicum.shareit.request;
 
+import ru.practicum.shareit.pagination.RandomAccessParams;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestUpdateDto;
 
@@ -11,4 +12,6 @@ public interface ItemRequestService {
     ItemRequestDto get(long callerId, long id);
 
     List<ItemRequestDto> getCreated(long creatorId);
+
+    List<ItemRequestDto> getFromOtherUsers(long callerId, RandomAccessParams randomAccessParams);
 }

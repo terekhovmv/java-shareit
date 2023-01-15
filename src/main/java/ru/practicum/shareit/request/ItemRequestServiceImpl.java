@@ -1,9 +1,12 @@
 package ru.practicum.shareit.request;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.pagination.RandomAccessPageRequest;
+import ru.practicum.shareit.pagination.RandomAccessParams;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestMapper;
 import ru.practicum.shareit.request.dto.ItemRequestUpdateDto;
@@ -71,7 +74,24 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> getCreated(long creatorId) {
         userRepository.require(creatorId);
 
-        List<ItemRequest> requests = itemRequestRepository.getCreated(creatorId);
+        return toDtos(
+                itemRequestRepository.getAllByRequesterIdOrderByCreatedDesc(creatorId)
+        );
+    }
+
+    @Override
+    public List<ItemRequestDto> getFromOtherUsers(long callerId, RandomAccessParams randomAccessParams) {
+        userRepository.require(callerId);
+
+        return toDtos(
+                itemRequestRepository.getAllByRequesterIdNot(
+                        callerId,
+                        RandomAccessPageRequest.of(randomAccessParams, Sort.by(Sort.Direction.DESC, "created"))
+                )
+        );
+    }
+
+    private List<ItemRequestDto> toDtos(List<ItemRequest> requests) {
         List<Long> requestIds = requests
                 .stream()
                 .map(ItemRequest::getId)
