@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.CommentUpdateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.pagination.dto.RandomAccessParamsDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -28,13 +29,27 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getOwned(@RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId) {
-        return service.getOwned(callerId);
+    public List<ItemDto> getOwned(
+            @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
+            @RequestParam(required = false) Integer from,
+            @RequestParam(required = false) Integer size
+    ) {
+        return service.getOwned(
+                callerId,
+                new RandomAccessParamsDto(from, size, ShareItAppConsts.DEFAULT_PAGE_SIZE)
+        );
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getAvailableWithText(@RequestParam("text") String text) {
-        return service.getAvailableWithText(text);
+    public List<ItemDto> getAvailableWithText(
+            @RequestParam("text") String text,
+            @RequestParam(required = false) Integer from,
+            @RequestParam(required = false) Integer size
+    ) {
+        return service.getAvailableWithText(
+                text,
+                new RandomAccessParamsDto(from, size, ShareItAppConsts.DEFAULT_PAGE_SIZE)
+        );
     }
 
     @PostMapping
