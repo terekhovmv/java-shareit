@@ -5,6 +5,7 @@ import ru.practicum.shareit.ShareItAppConsts;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingUpdateDto;
+import ru.practicum.shareit.pagination.dto.RandomAccessParamsDto;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -47,17 +48,29 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getCreated(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
-            @RequestParam(defaultValue = "ALL") String state
+            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(required = false) Integer from,
+            @RequestParam(required = false) Integer size
     ) {
-        return service.getCreated(callerId, parseBookingFilter(state));
+        return service.getCreated(
+                callerId,
+                parseBookingFilter(state),
+                new RandomAccessParamsDto(from, size, ShareItAppConsts.DEFAULT_PAGE_SIZE)
+        );
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getForOwnedItems(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
-            @RequestParam(defaultValue = "ALL") String state
+            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(required = false) Integer from,
+            @RequestParam(required = false) Integer size
     ) {
-        return service.getForOwnedItems(callerId, parseBookingFilter(state));
+        return service.getForOwnedItems(
+                callerId,
+                parseBookingFilter(state),
+                new RandomAccessParamsDto(from, size, ShareItAppConsts.DEFAULT_PAGE_SIZE)
+        );
     }
 
     private BookingFilter parseBookingFilter(String value) {
