@@ -84,10 +84,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userRepository.require(callerId);
 
         return toDtos(
-                itemRequestRepository.getAllByRequesterIdNot(
-                        callerId,
-                        RandomAccessPageRequest.of(randomAccessParams, Sort.by(Sort.Direction.DESC, "created"))
-                )
+                itemRequestRepository
+                        .getAllByRequesterIdNot(
+                                callerId,
+                                RandomAccessPageRequest.of(randomAccessParams, Sort.by(Sort.Direction.DESC, "created"))
+                        )
+                        .getContent()
         );
     }
 

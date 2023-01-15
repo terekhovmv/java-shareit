@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -127,29 +128,30 @@ public class BookingServiceImpl implements BookingService {
                 Sort.by(Sort.Direction.DESC, "start")
         );
 
-        List<Booking> found = null;
+        Page<Booking> page = null;
         switch (filter) {
             case ALL:
-                found = bookingRepository.getAllByBookerId(bookerId, pageable);
+                page = bookingRepository.getAllByBookerId(bookerId, pageable);
                 break;
             case WAITING:
-                found = bookingRepository.getAllByBookerIdAndStatus(bookerId, BookingStatus.WAITING, pageable);
+                page = bookingRepository.getAllByBookerIdAndStatus(bookerId, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                found = bookingRepository.getAllByBookerIdAndStatus(bookerId, BookingStatus.REJECTED, pageable);
+                page = bookingRepository.getAllByBookerIdAndStatus(bookerId, BookingStatus.REJECTED, pageable);
                 break;
             case PAST:
-                found = bookingRepository.getAllPastForBooker(bookerId, now, pageable);
+                page = bookingRepository.getAllPastForBooker(bookerId, now, pageable);
                 break;
             case FUTURE:
-                found = bookingRepository.getAllFutureForBooker(bookerId, now, pageable);
+                page = bookingRepository.getAllFutureForBooker(bookerId, now, pageable);
                 break;
             case CURRENT:
-                found = bookingRepository.getAllCurrentForBooker(bookerId, now, pageable);
+                page = bookingRepository.getAllCurrentForBooker(bookerId, now, pageable);
                 break;
         }
 
-        return found
+        return page
+                .getContent()
                 .stream()
                 .map(bookingMapper::toDto)
                 .collect(Collectors.toList());
@@ -163,29 +165,30 @@ public class BookingServiceImpl implements BookingService {
                 Sort.by(Sort.Direction.DESC, "start")
         );
 
-        List<Booking> found = null;
+        Page<Booking> page = null;
         switch (filter) {
             case ALL:
-                found = bookingRepository.getAllByItemOwnerId(ownerId, pageable);
+                page = bookingRepository.getAllByItemOwnerId(ownerId, pageable);
                 break;
             case WAITING:
-                found = bookingRepository.getAllByItemOwnerIdAndStatus(ownerId, BookingStatus.WAITING, pageable);
+                page = bookingRepository.getAllByItemOwnerIdAndStatus(ownerId, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                found = bookingRepository.getAllByItemOwnerIdAndStatus(ownerId, BookingStatus.REJECTED, pageable);
+                page = bookingRepository.getAllByItemOwnerIdAndStatus(ownerId, BookingStatus.REJECTED, pageable);
                 break;
             case PAST:
-                found = bookingRepository.getAllPastForItemOwner(ownerId, now, pageable);
+                page = bookingRepository.getAllPastForItemOwner(ownerId, now, pageable);
                 break;
             case FUTURE:
-                found = bookingRepository.getAllFutureForItemOwner(ownerId, now, pageable);
+                page = bookingRepository.getAllFutureForItemOwner(ownerId, now, pageable);
                 break;
             case CURRENT:
-                found = bookingRepository.getAllCurrentForItemOwner(ownerId, now, pageable);
+                page = bookingRepository.getAllCurrentForItemOwner(ownerId, now, pageable);
                 break;
         }
 
-        return found
+        return page
+                .getContent()
                 .stream()
                 .map(bookingMapper::toDto)
                 .collect(Collectors.toList());

@@ -70,10 +70,13 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getOwned(long ownerId, RandomAccessParams randomAccessParams) {
         userRepository.require(ownerId);
 
-        List<Item> items = itemRepository.getAllByOwnerId(
-                ownerId,
-                RandomAccessPageRequest.of(randomAccessParams, Sort.by(Sort.Direction.ASC, "id"))
-        );
+        List<Item> items = itemRepository
+                .getAllByOwnerId(
+                        ownerId,
+                        RandomAccessPageRequest.of(randomAccessParams, Sort.by(Sort.Direction.ASC, "id"))
+                )
+                .getContent();
+
         List<Long> itemIds = items
                 .stream()
                 .map(Item::getId)
@@ -112,6 +115,7 @@ public class ItemServiceImpl implements ItemService {
                         text,
                         RandomAccessPageRequest.of(randomAccessParams, Sort.by(Sort.Direction.ASC, "id"))
                 )
+                .getContent()
                 .stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
