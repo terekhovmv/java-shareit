@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.ShareItAppConsts;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/items")
+@Validated
 public class ItemController {
     public final ItemService service;
 
