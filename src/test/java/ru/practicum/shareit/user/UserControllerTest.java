@@ -121,6 +121,9 @@ public class UserControllerTest {
     }
 
     private UserUpdateDto toUserUpdateDto(UserDto from) {
-        return new UserUpdateDto(from.getName(), from.getEmail());
+        UserUpdateDto result = new UserUpdateDto();
+        result.setName(from.getName());
+        result.setEmail(from.getEmail());
+        return result;
     }
 }
