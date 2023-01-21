@@ -265,12 +265,12 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.created", is(dateTimeToString(comment.getCreated()))));
     }
 
-    private ItemDto createItemDto(int idx) {
+    private ItemDto createItemDto(long id) {
         ItemDto result = new ItemDto();
-        result.setId((long) idx);
-        result.setName("name-" + idx);
-        result.setDescription("description-" + idx);
-        result.setAvailable(idx % 2 == 1);
+        result.setId(id);
+        result.setName("name-" + id);
+        result.setDescription("description-" + id);
+        result.setAvailable(id % 2 == 1);
         return result;
     }
 
@@ -282,11 +282,11 @@ public class ItemControllerTest {
         return result;
     }
 
-    private CommentDto createCommentDto(int idx) {
+    private CommentDto createCommentDto(long id) {
         CommentDto result = new CommentDto();
-        result.setId((long) idx);
-        result.setText("text-" + idx);
-        result.setAuthorName("author-name-" + idx);
+        result.setId(id);
+        result.setText("text-" + id);
+        result.setAuthorName("author-name-" + id);
         result.setCreated(LocalDateTime.now());
         return result;
     }

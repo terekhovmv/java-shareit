@@ -113,11 +113,11 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
-    private UserDto createUserDto(int idx) {
+    private UserDto createUserDto(long id) {
         UserDto result = new UserDto();
-        result.setId((long) idx);
-        result.setName("user-" + idx);
-        result.setEmail("user-" + idx + "@abc.def");
+        result.setId(id);
+        result.setName("user-" + id);
+        result.setEmail("user-" + id + "@abc.def");
         return result;
     }
 

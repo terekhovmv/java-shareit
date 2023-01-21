@@ -171,11 +171,11 @@ public class ItemRequestControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    private ItemRequestDto createItemRequestDto(int idx) {
+    private ItemRequestDto createItemRequestDto(long id) {
         ItemRequestDto result = new ItemRequestDto();
-        result.setId((long) idx);
-        result.setDescription("description-" + idx);
-        result.setCreated(LocalDateTime.of(1984 + idx, Month.DECEMBER, 31, 23, 59, 59));
+        result.setId(id);
+        result.setDescription("description-" + id);
+        result.setCreated(LocalDateTime.of(1984 + (int)id, Month.DECEMBER, 31, 23, 59, 59));
         result.setItems(List.of());
         return result;
     }
