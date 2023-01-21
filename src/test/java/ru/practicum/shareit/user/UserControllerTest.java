@@ -56,6 +56,7 @@ public class UserControllerTest {
 
         mvc.perform(get("/users"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(2)))
                 .andExpect(jsonPath("$.[0].id", is(ann.getId()), Long.class))
                 .andExpect(jsonPath("$.[0].name", is(ann.getName())))
                 .andExpect(jsonPath("$.[0].email", is(ann.getEmail())))
