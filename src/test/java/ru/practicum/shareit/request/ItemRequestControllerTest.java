@@ -83,8 +83,8 @@ public class ItemRequestControllerTest {
     @Test
     void getCreated() throws Exception {
         long callerId = 100;
-        ItemRequestDto album = createItemRequestDto(0);
-        ItemRequestDto banjo = createItemRequestDto(1);
+        ItemRequestDto album = createItemRequestDto(1);
+        ItemRequestDto banjo = createItemRequestDto(2);
 
         when(
                 service.getCreated(callerId)
@@ -94,6 +94,7 @@ public class ItemRequestControllerTest {
                         .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
                 )
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(2)))
                 .andExpect(jsonPath("$.[0].id", is(album.getId()), Long.class))
                 .andExpect(jsonPath("$.[0].description", is(album.getDescription())))
                 .andExpect(jsonPath("$.[0].created", is(dateTimeToString(album.getCreated()))))
@@ -107,8 +108,8 @@ public class ItemRequestControllerTest {
     @Test
     void getFromOtherUsers() throws Exception {
         long callerId = 100;
-        ItemRequestDto album = createItemRequestDto(0);
-        ItemRequestDto banjo = createItemRequestDto(1);
+        ItemRequestDto album = createItemRequestDto(1);
+        ItemRequestDto banjo = createItemRequestDto(2);
 
         when(
                 service.getFromOtherUsers(eq(callerId), any())
@@ -120,6 +121,7 @@ public class ItemRequestControllerTest {
                         .param("size", "2")
                 )
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()", is(2)))
                 .andExpect(jsonPath("$.[0].id", is(album.getId()), Long.class))
                 .andExpect(jsonPath("$.[0].description", is(album.getDescription())))
                 .andExpect(jsonPath("$.[0].created", is(dateTimeToString(album.getCreated()))))
