@@ -22,9 +22,10 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -214,8 +215,8 @@ public class BookingControllerTest {
     @Test
     void getForOwnedItems() throws Exception {
         long callerId = 100;
-        BookingDto album = createBookingDto(callerId+1, 1, 1);
-        BookingDto banjo = createBookingDto(callerId+1, 2, 2);
+        BookingDto album = createBookingDto(callerId + 1, 1, 1);
+        BookingDto banjo = createBookingDto(callerId + 1, 2, 2);
         BookingFilter filter = BookingFilter.WAITING;
 
         when(
