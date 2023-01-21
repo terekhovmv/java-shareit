@@ -67,6 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long id) {
+        userRepository.require(id);
         userRepository.deleteById(id);
         log.info("User #{} was successfully updated", id);
     }
