@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.exceptions.NotRealBookerException;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @Service
 public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
+    private final ItemRequestRepository requestRepository;
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
@@ -30,6 +32,7 @@ public class ItemServiceImpl implements ItemService {
 
     public ItemServiceImpl(
             UserRepository userRepository,
+            ItemRequestRepository requestRepository,
             ItemRepository itemRepository,
             CommentRepository commentRepository,
             BookingRepository bookingRepository,
@@ -37,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
             CommentMapper commentMapper
     ) {
         this.userRepository = userRepository;
+        this.requestRepository = requestRepository;
         this.itemRepository = itemRepository;
         this.commentRepository = commentRepository;
         this.bookingRepository = bookingRepository;
@@ -116,13 +120,17 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(long ownerId, ItemUpdateDto dto) {
         User owner = userRepository.require(ownerId);
+        Long requestId = dto.getRequestId();
+        if (requestId != null) {
+            requestRepository.require(requestId);
+        }
 
         Item archetype = new Item();
         archetype.setName(dto.getName());
         archetype.setDescription(dto.getDescription());
         archetype.setAvailable(dto.getAvailable());
         archetype.setOwner(owner);
-        archetype.setRequestId(dto.getRequestId());
+        archetype.setRequestId(requestId);
 
         Item created = itemRepository.save(archetype);
         log.info(
