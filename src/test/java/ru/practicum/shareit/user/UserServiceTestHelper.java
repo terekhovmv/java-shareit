@@ -24,4 +24,8 @@ public class UserServiceTestHelper {
     public UserDto create(String name) {
         return service.create(makeUserUpdateDto(name));
     }
+
+    public long createAndGetId(String name) {
+        return create(name).getId();
+    }
 }
