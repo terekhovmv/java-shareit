@@ -50,6 +50,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto get(long callerId, long id) {
+        userRepository.require(callerId);
         Item item = itemRepository.require(id);
 
         if (Objects.equals(callerId, item.getOwner().getId())) {
@@ -158,6 +159,11 @@ public class ItemServiceImpl implements ItemService {
         }
         if (dto.getAvailable() != null) {
             toUpdate.setAvailable(dto.getAvailable());
+        }
+        Long requestId = dto.getRequestId();
+        if (requestId != null) {
+            requestRepository.require(requestId);
+            toUpdate.setRequestId(requestId);
         }
 
         Item updated = itemRepository.save(toUpdate);
