@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingUpdateDto;
 import ru.practicum.shareit.booking.exceptions.AlreadyApprovedBookingException;
 import ru.practicum.shareit.booking.exceptions.UnableToCreateBookingException;
@@ -15,6 +17,7 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.ItemServiceTestHelper;
+import ru.practicum.shareit.pagination.RandomAccessPageRequest;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.UserServiceTestHelper;
 
@@ -31,8 +34,6 @@ import static ru.practicum.shareit.user.UserAssertions.assertUserNotFound;
 @SpringBootTest
 public class BookingServiceImplTest {
     private static final long UNKNOWN_USER_ID = Long.MAX_VALUE;
-
-    private static final long UNKNOWN_ITEM_ID = Long.MAX_VALUE;
 
     private static final long UNKNOWN_ID = Long.MAX_VALUE;
 
@@ -226,6 +227,30 @@ public class BookingServiceImplTest {
         assertThrows(
                 NotFoundException.class,
                 () -> testee.get(callerId, bookingId)
+        );
+    }
+
+    @Test
+    void getCreatedForUnknownBooker() {
+        assertUserNotFound(
+                UNKNOWN_USER_ID,
+                () -> testee.getCreated(
+                        UNKNOWN_USER_ID,
+                        BookingFilter.ALL,
+                        RandomAccessPageRequest.of(0, 100, Sort.unsorted())
+                )
+        );
+    }
+
+    @Test
+    void getForOwnedItemsForUnknownOwner() {
+        assertUserNotFound(
+                UNKNOWN_USER_ID,
+                () -> testee.getForOwnedItems(
+                        UNKNOWN_USER_ID,
+                        BookingFilter.ALL,
+                        RandomAccessPageRequest.of(0, 100, Sort.unsorted())
+                )
         );
     }
 }
