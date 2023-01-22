@@ -30,12 +30,20 @@ public class ItemServiceTestHelper {
         return result;
     }
 
+    public ItemDto create(long ownerId, String name, String description, Boolean available, Long requesterId) {
+        return service.create(ownerId, makeItemUpdateDto(name, description, available, requesterId));
+    }
+
     public ItemDto create(long ownerId, String name, Long requesterId) {
         return service.create(ownerId, makeItemUpdateDto(name, requesterId));
     }
 
     public ItemDto create(long ownerId, String name) {
         return create(ownerId, name, null);
+    }
+
+    public long createAndGetId(long ownerId, String name, String description, Boolean available, Long requesterId) {
+        return create(ownerId, name, description, available, requesterId).getId();
     }
 
     public long createAndGetId(long ownerId, String name, Long requesterId) {
