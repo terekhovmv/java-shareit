@@ -17,32 +17,11 @@ public class ItemMapper {
     }
 
     public ItemDto toDto(Item from) {
-        ItemDto mapped = new ItemDto();
-
-        mapped.setId(from.getId());
-        mapped.setName(from.getName());
-        mapped.setDescription(from.getDescription());
-        mapped.setRequestId(from.getRequestId());
-        mapped.setAvailable(from.getAvailable());
-        mapped.setComments(List.of());
-
-        return mapped;
+        return toDto(from, null, null, null);
     }
 
     public ItemDto toDto(Item from, List<Comment> comments) {
-        ItemDto mapped = toDto(from);
-
-        if (comments != null) {
-            mapped.setComments(
-                    comments
-                            .stream()
-                            .map(commentMapper::toDto)
-                            .collect(Collectors.toList())
-
-            );
-        }
-
-        return mapped;
+        return toDto(from, comments, null, null);
     }
 
     public ItemDto toDto(
@@ -51,7 +30,22 @@ public class ItemMapper {
             Booking lastBooking,
             Booking nextBooking
     ) {
-        ItemDto mapped = toDto(from, comments);
+        ItemDto mapped = new ItemDto();
+
+        mapped.setId(from.getId());
+        mapped.setName(from.getName());
+        mapped.setDescription(from.getDescription());
+        mapped.setRequestId(from.getRequestId());
+        mapped.setAvailable(from.getAvailable());
+
+        mapped.setComments(
+                comments != null
+                ? comments
+                        .stream()
+                        .map(commentMapper::toDto)
+                        .collect(Collectors.toList())
+                : List.of()
+        );
 
         if (lastBooking != null) {
             mapped.setLastBooking(

@@ -17,16 +17,15 @@ public final class ItemRequestMapper {
     }
 
     public ItemRequestDto toDto(ItemRequest from) {
-        ItemRequestDto mapped = new ItemRequestDto();
-        mapped.setId(from.getId());
-        mapped.setDescription(from.getDescription());
-        mapped.setCreated(from.getCreated());
-        mapped.setItems(List.of());
-        return mapped;
+        return toDto(from, null);
     }
 
     public ItemRequestDto toDto(ItemRequest from, List<Item> items) {
-        ItemRequestDto mapped = toDto(from);
+        ItemRequestDto mapped = new ItemRequestDto();
+
+        mapped.setId(from.getId());
+        mapped.setDescription(from.getDescription());
+        mapped.setCreated(from.getCreated());
 
         mapped.setItems(
                 items != null
