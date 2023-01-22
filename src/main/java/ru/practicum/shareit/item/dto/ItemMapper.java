@@ -24,6 +24,7 @@ public class ItemMapper {
         mapped.setDescription(from.getDescription());
         mapped.setRequestId(from.getRequestId());
         mapped.setAvailable(from.getAvailable());
+        mapped.setComments(List.of());
 
         return mapped;
     }

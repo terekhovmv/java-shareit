@@ -21,6 +21,7 @@ public final class ItemRequestMapper {
         mapped.setId(from.getId());
         mapped.setDescription(from.getDescription());
         mapped.setCreated(from.getCreated());
+        mapped.setItems(List.of());
         return mapped;
     }
 
