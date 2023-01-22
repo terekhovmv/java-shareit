@@ -62,8 +62,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userRepository.require(callerId);
 
         ItemRequest request = itemRequestRepository.require(id);
+
         return mapper.toDto(
-                itemRequestRepository.require(id),
+                request,
                 itemRepository.getAllByRequestId(id)
         );
     }
