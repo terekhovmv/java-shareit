@@ -346,4 +346,15 @@ public class ItemServiceImplTest {
                 List.of(groot, fader, dwarf, capri)
         );
     }
+
+    @Test
+    void getAvailableWithEmptyText() {
+        assertIterableEquals(
+                testee.getAvailableWithText(
+                        "ABC",
+                        RandomAccessPageRequest.of(0, 1, Sort.unsorted())
+                ),
+                List.of()
+        );
+    }
 }
