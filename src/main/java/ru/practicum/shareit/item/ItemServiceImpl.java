@@ -58,8 +58,8 @@ public class ItemServiceImpl implements ItemService {
             return itemMapper.toDto(
                     item,
                     commentRepository.getAllByItemIdOrderByCreatedDesc(id),
-                    bookingRepository.getLastForItem(id, now),
-                    bookingRepository.getNextForItem(id, now)
+                    bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(id, now),
+                    bookingRepository.getFirstByItemIdAndStartAfterOrderByStartAsc(id, now)
             );
         }
 
