@@ -159,30 +159,31 @@ public class ItemServiceImplCommentTest {
     }
 
     private User createUser(long id) {
-        User result = new User();
-        result.setId(id);
-        result.setName("user-" + id);
-        result.setEmail("user" + id + "@abc.def");
-        return result;
+        return new User(
+                id,
+                "user-" + id,
+                "user" + id + "@abc.def"
+        );
     }
 
     private Item createItem(long id, User owner) {
-        Item result = new Item();
-        result.setId(id);
-        result.setName("item-" + id);
-        result.setDescription("item-description-" + id);
-        result.setAvailable(true);
-        result.setOwner(owner);
-        return result;
+        return new Item(
+                id,
+                "item-" + id,
+                "item-description-" + id,
+                true,
+                owner,
+                null
+        );
     }
 
     private Comment createComment(long id, String text, Item item, User author) {
-        Comment result = new Comment();
-        result.setId(id);
-        result.setText(text);
-        result.setItem(item);
-        result.setAuthor(author);
-        result.setCreated(LocalDateTime.now());
-        return result;
+        return new Comment(
+                id,
+                text,
+                item,
+                author,
+                LocalDateTime.now()
+        );
     }
 }

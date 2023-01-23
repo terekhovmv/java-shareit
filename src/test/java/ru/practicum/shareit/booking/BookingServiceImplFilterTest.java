@@ -380,29 +380,33 @@ public class BookingServiceImplFilterTest {
     }
 
     private User createUser(long id) {
-        User result = new User();
-        result.setId(id);
-        result.setName("user-" + id);
-        result.setEmail("user" + id + "@abc.def");
-        return result;
+        return new User(
+                id,
+                "user-" + id,
+                "user" + id + "@abc.def"
+        );
     }
 
     private Item createItem(long id, User owner) {
-        Item result = new Item();
-        result.setId(id);
-        result.setName("item-" + id);
-        result.setDescription("item-description-" + id);
-        result.setAvailable(true);
-        result.setOwner(owner);
-        return result;
+       return new Item(
+                id,
+                "item-" + id,
+                "item-description-" + id,
+                true,
+                owner,
+                null
+        );
     }
 
     private Booking createBooking(long id, Item item, User booker) {
-        Booking result = new Booking();
-        result.setId(id);
-        result.setItem(item);
-        result.setBooker(booker);
-        return result;
+        return new Booking(
+                id,
+                null,
+                null,
+                item,
+                booker,
+                BookingStatus.WAITING
+        );
     }
 
 }
