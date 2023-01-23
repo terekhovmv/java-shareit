@@ -388,7 +388,7 @@ public class BookingServiceImplFilterTest {
     }
 
     private Item createItem(long id, User owner) {
-       return new Item(
+        return new Item(
                 id,
                 "item-" + id,
                 "item-description-" + id,
