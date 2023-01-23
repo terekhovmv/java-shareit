@@ -22,20 +22,20 @@ public class BookingDtoJsonTest {
     @Test
     void serialization() throws IOException {
         ItemDto itemDto = new ItemDto();
-        itemDto.setId(1l);
+        itemDto.setId(1L);
         itemDto.setName("item");
         itemDto.setDescription("item-description");
         itemDto.setAvailable(true);
-        itemDto.setRequestId(777l);
+        itemDto.setRequestId(777L);
         itemDto.setComments(List.of());
 
         UserDto bookerDto = new UserDto();
-        bookerDto.setId(1l);
+        bookerDto.setId(1L);
         bookerDto.setName("booker");
         bookerDto.setEmail("booker@abc.def");
 
         BookingDto from = new BookingDto();
-        from.setId(1l);
+        from.setId(1L);
         from.setStart(LocalDateTime.of(2030, 1, 1, 1, 2, 3));
         from.setEnd(LocalDateTime.of(2031, 1, 1, 1, 2, 3));
         from.setItem(itemDto);
