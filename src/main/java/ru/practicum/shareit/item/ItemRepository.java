@@ -1,10 +1,13 @@
 package ru.practicum.shareit.item;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
@@ -12,8 +15,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
         return findById(id).orElseThrow(() -> new NotFoundException("Unable to find the item #" + id));
     }
 
-    @Query("SELECT i FROM Item i WHERE i.owner.id = ?1 ORDER BY i.id ASC")
-    List<Item> getAllOwned(long userId);
+    Page<Item> getAllByOwnerId(long userId, Pageable pageable);
 
     @Query(
             "SELECT i FROM Item i " +
@@ -22,5 +24,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
                 "OR UPPER(i.description) LIKE UPPER(CONCAT('%', ?1, '%')) " +
             ") AND i.available = true"
     )
-    List<Item> getAllAvailableWithText(String text);
+    Page<Item> getAllAvailableWithText(String text, Pageable pageable);
+
+    List<Item> getAllByRequestId(long requestId);
+
+    List<Item> getAllByRequestIdIn(Collection<Long> requestIds);
 }

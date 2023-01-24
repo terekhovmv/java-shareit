@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFilter;
@@ -115,65 +117,67 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getCreated(long bookerId, BookingFilter filter) {
+    public List<BookingDto> getCreated(long bookerId, BookingFilter filter, Pageable pageable) {
         userRepository.require(bookerId);
         LocalDateTime now = LocalDateTime.now();
 
-        List<Booking> found = null;
+        Page<Booking> page = null;
         switch (filter) {
             case ALL:
-                found = bookingRepository.getAllForBooker(bookerId);
+                page = bookingRepository.getAllByBookerId(bookerId, pageable);
                 break;
             case WAITING:
-                found = bookingRepository.getAllByStatusForBooker(bookerId, BookingStatus.WAITING);
+                page = bookingRepository.getAllByBookerIdAndStatus(bookerId, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                found = bookingRepository.getAllByStatusForBooker(bookerId, BookingStatus.REJECTED);
+                page = bookingRepository.getAllByBookerIdAndStatus(bookerId, BookingStatus.REJECTED, pageable);
                 break;
             case PAST:
-                found = bookingRepository.getAllPastForBooker(bookerId, now);
+                page = bookingRepository.getAllPastForBooker(bookerId, now, pageable);
                 break;
             case FUTURE:
-                found = bookingRepository.getAllFutureForBooker(bookerId, now);
+                page = bookingRepository.getAllFutureForBooker(bookerId, now, pageable);
                 break;
             case CURRENT:
-                found = bookingRepository.getAllCurrentForBooker(bookerId, now);
+                page = bookingRepository.getAllCurrentForBooker(bookerId, now, pageable);
                 break;
         }
 
-        return found
+        return page
+                .getContent()
                 .stream()
                 .map(bookingMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public List<BookingDto> getForOwnedItems(long ownerId, BookingFilter filter) {
+    public List<BookingDto> getForOwnedItems(long ownerId, BookingFilter filter, Pageable pageable) {
         userRepository.require(ownerId);
         LocalDateTime now = LocalDateTime.now();
 
-        List<Booking> found = null;
+        Page<Booking> page = null;
         switch (filter) {
             case ALL:
-                found = bookingRepository.getAllForOwner(ownerId);
+                page = bookingRepository.getAllByItemOwnerId(ownerId, pageable);
                 break;
             case WAITING:
-                found = bookingRepository.getAllByStatusForOwner(ownerId, BookingStatus.WAITING);
+                page = bookingRepository.getAllByItemOwnerIdAndStatus(ownerId, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                found = bookingRepository.getAllByStatusForOwner(ownerId, BookingStatus.REJECTED);
+                page = bookingRepository.getAllByItemOwnerIdAndStatus(ownerId, BookingStatus.REJECTED, pageable);
                 break;
             case PAST:
-                found = bookingRepository.getAllPastForOwner(ownerId, now);
+                page = bookingRepository.getAllPastForItemOwner(ownerId, now, pageable);
                 break;
             case FUTURE:
-                found = bookingRepository.getAllFutureForOwner(ownerId, now);
+                page = bookingRepository.getAllFutureForItemOwner(ownerId, now, pageable);
                 break;
             case CURRENT:
-                found = bookingRepository.getAllCurrentForOwner(ownerId, now);
+                page = bookingRepository.getAllCurrentForItemOwner(ownerId, now, pageable);
                 break;
         }
 
-        return found
+        return page
+                .getContent()
                 .stream()
                 .map(bookingMapper::toDto)
                 .collect(Collectors.toList());

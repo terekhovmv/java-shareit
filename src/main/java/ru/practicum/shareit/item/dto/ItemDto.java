@@ -10,6 +10,7 @@ public class ItemDto {
     String name;
     String description;
     Boolean available;
+    Long requestId;
     List<CommentDto> comments;
     BookingBriefDto lastBooking;
     BookingBriefDto nextBooking;

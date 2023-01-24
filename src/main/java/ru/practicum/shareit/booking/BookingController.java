@@ -1,17 +1,22 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.ShareItAppConsts;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingFilter;
 import ru.practicum.shareit.booking.dto.BookingUpdateDto;
+import ru.practicum.shareit.pagination.RandomAccessPageRequest;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
+@Validated
 public class BookingController {
     private final BookingService service;
 
@@ -47,17 +52,29 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getCreated(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
-            @RequestParam(defaultValue = "ALL") String state
+            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) int size
     ) {
-        return service.getCreated(callerId, parseBookingFilter(state));
+        return service.getCreated(
+                callerId,
+                parseBookingFilter(state),
+                RandomAccessPageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "start"))
+        );
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getForOwnedItems(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
-            @RequestParam(defaultValue = "ALL") String state
+            @RequestParam(defaultValue = "ALL") String state,
+            @RequestParam(defaultValue = "0") @Min(0) int from,
+            @RequestParam(defaultValue = "20") @Min(1) int size
     ) {
-        return service.getForOwnedItems(callerId, parseBookingFilter(state));
+        return service.getForOwnedItems(
+                callerId,
+                parseBookingFilter(state),
+                RandomAccessPageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "start"))
+        );
     }
 
     private BookingFilter parseBookingFilter(String value) {

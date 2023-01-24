@@ -1,12 +1,15 @@
 package ru.practicum.shareit.user.model;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

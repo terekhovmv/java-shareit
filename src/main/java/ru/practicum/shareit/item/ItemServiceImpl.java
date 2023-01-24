@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
@@ -10,6 +11,7 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.exceptions.NotRealBookerException;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 @Service
 public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
+    private final ItemRequestRepository requestRepository;
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
@@ -29,6 +32,7 @@ public class ItemServiceImpl implements ItemService {
 
     public ItemServiceImpl(
             UserRepository userRepository,
+            ItemRequestRepository requestRepository,
             ItemRepository itemRepository,
             CommentRepository commentRepository,
             BookingRepository bookingRepository,
@@ -36,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
             CommentMapper commentMapper
     ) {
         this.userRepository = userRepository;
+        this.requestRepository = requestRepository;
         this.itemRepository = itemRepository;
         this.commentRepository = commentRepository;
         this.bookingRepository = bookingRepository;
@@ -45,6 +50,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto get(long callerId, long id) {
+        userRepository.require(callerId);
         Item item = itemRepository.require(id);
 
         if (Objects.equals(callerId, item.getOwner().getId())) {
@@ -52,8 +58,8 @@ public class ItemServiceImpl implements ItemService {
             return itemMapper.toDto(
                     item,
                     commentRepository.getAllByItemIdOrderByCreatedDesc(id),
-                    bookingRepository.getLastForItem(id, now),
-                    bookingRepository.getNextForItem(id, now)
+                    bookingRepository.getFirstByItemIdAndEndBeforeOrderByEndDesc(id, now),
+                    bookingRepository.getFirstByItemIdAndStartAfterOrderByStartAsc(id, now)
             );
         }
 
@@ -64,8 +70,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getOwned(long ownerId) {
-        List<Item> items = itemRepository.getAllOwned(ownerId);
+    public List<ItemDto> getOwned(long ownerId, Pageable pageable) {
+        userRepository.require(ownerId);
+
+        List<Item> items = itemRepository
+                .getAllByOwnerId(ownerId, pageable)
+                .getContent();
+
         List<Long> itemIds = items
                 .stream()
                 .map(Item::getId)
@@ -94,12 +105,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getAvailableWithText(String text) {
+    public List<ItemDto> getAvailableWithText(String text, Pageable pageable) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
 
-        return itemRepository.getAllAvailableWithText(text)
+        return itemRepository
+                .getAllAvailableWithText(text, pageable)
+                .getContent()
                 .stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
@@ -108,13 +121,17 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(long ownerId, ItemUpdateDto dto) {
         User owner = userRepository.require(ownerId);
+        Long requestId = dto.getRequestId();
+        if (requestId != null) {
+            requestRepository.require(requestId);
+        }
 
         Item archetype = new Item();
         archetype.setName(dto.getName());
         archetype.setDescription(dto.getDescription());
         archetype.setAvailable(dto.getAvailable());
         archetype.setOwner(owner);
-        archetype.setRequestId(null);
+        archetype.setRequestId(requestId);
 
         Item created = itemRepository.save(archetype);
         log.info(
@@ -142,6 +159,11 @@ public class ItemServiceImpl implements ItemService {
         }
         if (dto.getAvailable() != null) {
             toUpdate.setAvailable(dto.getAvailable());
+        }
+        Long requestId = dto.getRequestId();
+        if (requestId != null) {
+            requestRepository.require(requestId);
+            toUpdate.setRequestId(requestId);
         }
 
         Item updated = itemRepository.save(toUpdate);
