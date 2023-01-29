@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,7 +15,7 @@ import ru.practicum.shareit.gateway.errors.dto.ErrorResponseDto;
 import javax.validation.ValidationException;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class ErrorHandler {
     @ExceptionHandler({
             ValidationException.class,
