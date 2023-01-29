@@ -29,11 +29,8 @@ public final class ItemRequestMapper {
 
         mapped.setItems(
                 items != null
-                ? items
-                        .stream()
-                        .map(itemMapper::toDto)
-                        .collect(Collectors.toList())
-                : List.of()
+                        ? items.stream().map(itemMapper::toDto).collect(Collectors.toList())
+                        : List.of()
         );
 
         return mapped;

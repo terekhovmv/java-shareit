@@ -40,11 +40,8 @@ public class ItemMapper {
 
         mapped.setComments(
                 comments != null
-                ? comments
-                        .stream()
-                        .map(commentMapper::toDto)
-                        .collect(Collectors.toList())
-                : List.of()
+                        ? comments.stream().map(commentMapper::toDto).collect(Collectors.toList())
+                        : List.of()
         );
 
         if (lastBooking != null) {

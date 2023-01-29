@@ -153,46 +153,47 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.[1].description", is(banjo.getDescription())))
                 .andExpect(jsonPath("$.[1].available", is(banjo.getAvailable())));
     }
-/*
-    @Test
-    void getAvailableWithTextWithNotValidFrom() throws Exception {
-        String text = "suitable for";
 
-        when(
-                service.getAvailableWithText(eq(text), any())
-        ).thenReturn(List.of());
+    /*
+        @Test
+        void getAvailableWithTextWithNotValidFrom() throws Exception {
+            String text = "suitable for";
 
-        mvc.perform(get("/items/search")
-                        .param("text", text)
-                        .param("from", "-1")
-                        .param("size", "2")
-                )
-                .andExpect(status().isBadRequest());
-    }
+            when(
+                    service.getAvailableWithText(eq(text), any())
+            ).thenReturn(List.of());
 
-    @Test
-    void getAvailableWithTextWithNotValidSize() throws Exception {
-        String text = "suitable for";
+            mvc.perform(get("/items/search")
+                            .param("text", text)
+                            .param("from", "-1")
+                            .param("size", "2")
+                    )
+                    .andExpect(status().isBadRequest());
+        }
 
-        when(
-                service.getAvailableWithText(eq(text), any())
-        ).thenReturn(List.of());
+        @Test
+        void getAvailableWithTextWithNotValidSize() throws Exception {
+            String text = "suitable for";
 
-        mvc.perform(get("/items/search")
-                        .param("text", text)
-                        .param("from", "0")
-                        .param("size", "0")
-                )
-                .andExpect(status().isBadRequest());
+            when(
+                    service.getAvailableWithText(eq(text), any())
+            ).thenReturn(List.of());
 
-        mvc.perform(get("/items/search")
-                        .param("text", text)
-                        .param("from", "0")
-                        .param("size", "-1")
-                )
-                .andExpect(status().isBadRequest());
-    }
-*/
+            mvc.perform(get("/items/search")
+                            .param("text", text)
+                            .param("from", "0")
+                            .param("size", "0")
+                    )
+                    .andExpect(status().isBadRequest());
+
+            mvc.perform(get("/items/search")
+                            .param("text", text)
+                            .param("from", "0")
+                            .param("size", "-1")
+                    )
+                    .andExpect(status().isBadRequest());
+        }
+    */
     @Test
     void create() throws Exception {
         long callerId = 100;

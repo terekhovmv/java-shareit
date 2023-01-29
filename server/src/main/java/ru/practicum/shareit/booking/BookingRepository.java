@@ -53,10 +53,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(
             "SELECT COUNT (b) FROM Booking b " +
-            "WHERE b.booker.id = ?1 " +
-                "AND b.item.id = ?2 " +
-                "AND b.end < ?3 " +
-                "AND b.status = ru.practicum.shareit.booking.model.BookingStatus.APPROVED"
+                    "WHERE b.booker.id = ?1 " +
+                    "AND b.item.id = ?2 " +
+                    "AND b.end < ?3 " +
+                    "AND b.status = ru.practicum.shareit.booking.model.BookingStatus.APPROVED"
     )
     Integer getFinishedCount(long bookerId, long itemId, LocalDateTime now);
 }
