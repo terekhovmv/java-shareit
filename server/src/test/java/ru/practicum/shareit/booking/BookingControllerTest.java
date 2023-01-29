@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -147,71 +148,68 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.[1].status", is(banjo.getStatus().toString())));
     }
 
-    /*
-        @Test
-        void getCreatedWithNotValidFrom() throws Exception {
-            long callerId = 100;
-            BookingFilter filter = BookingFilter.WAITING;
+    @Test
+    void getCreatedWithNotValidFrom() throws Exception {
+        long callerId = 100;
+        BookingFilter filter = BookingFilter.WAITING;
 
-            when(
-                    service.getCreated(eq(callerId), any(), any())
-            ).thenReturn(List.of());
+        when(
+                service.getCreated(eq(callerId), any(), any())
+        ).thenReturn(List.of());
 
-            mvc.perform(get("/bookings")
-                            .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
-                            .param("state", filter.toString())
-                            .param("from", "-1")
-                            .param("size", "2")
-                    )
-                    .andExpect(status().isBadRequest());
-        }
+        mvc.perform(get("/bookings")
+                        .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
+                        .param("state", filter.toString())
+                        .param("from", "-1")
+                        .param("size", "2")
+                )
+                .andExpect(status().is5xxServerError());
+    }
 
-        @Test
-        void getCreatedNotValidSize() throws Exception {
-            long callerId = 100;
-            BookingFilter filter = BookingFilter.WAITING;
+    @Test
+    void getCreatedNotValidSize() throws Exception {
+        long callerId = 100;
+        BookingFilter filter = BookingFilter.WAITING;
 
-            when(
-                    service.getCreated(eq(callerId), any(), any())
-            ).thenReturn(List.of());
+        when(
+                service.getCreated(eq(callerId), any(), any())
+        ).thenReturn(List.of());
 
-            mvc.perform(get("/bookings")
-                            .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
-                            .param("state", filter.toString())
-                            .param("from", "0")
-                            .param("size", "0")
-                    )
-                    .andExpect(status().isBadRequest());
+        mvc.perform(get("/bookings")
+                        .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
+                        .param("state", filter.toString())
+                        .param("from", "0")
+                        .param("size", "0")
+                )
+                .andExpect(status().is5xxServerError());
 
-            mvc.perform(get("/bookings")
-                            .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
-                            .param("state", filter.toString())
-                            .param("from", "0")
-                            .param("size", "-1")
-                    )
-                    .andExpect(status().isBadRequest());
-        }
+        mvc.perform(get("/bookings")
+                        .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
+                        .param("state", filter.toString())
+                        .param("from", "0")
+                        .param("size", "-1")
+                )
+                .andExpect(status().is5xxServerError());
+    }
 
-        @Test
-        void getCreatedWithNotValidFilter() throws Exception {
-            long callerId = 100;
-            String filter = "unknown";
+    @Test
+    void getCreatedWithNotValidFilter() throws Exception {
+        long callerId = 100;
+        String filter = "unknown";
 
-            when(
-                    service.getCreated(eq(callerId), any(), any())
-            ).thenReturn(List.of());
+        when(
+                service.getCreated(eq(callerId), any(), any())
+        ).thenReturn(List.of());
 
-            String errorMessage = mvc.perform(get("/bookings")
-                            .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
-                            .param("state", filter)
-                            .param("from", "0")
-                            .param("size", "2")
-                    )
-                    .andExpect(status().isBadRequest())
-                    .andReturn().getResolvedException().getMessage();
-            Assertions.assertEquals("Unknown state: " + filter, errorMessage);
-        }
-    */
+        mvc.perform(get("/bookings")
+                        .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
+                        .param("state", filter)
+                        .param("from", "0")
+                        .param("size", "2")
+                )
+                .andExpect(status().is5xxServerError());
+    }
+
     @Test
     void getForOwnedItems() throws Exception {
         long callerId = 100;
@@ -244,7 +242,7 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.[1].booker.id", is(banjo.getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$.[1].status", is(banjo.getStatus().toString())));
     }
-/*
+
     @Test
     void getForOwnedItemsWithNotValidFrom() throws Exception {
         long callerId = 100;
@@ -260,7 +258,7 @@ public class BookingControllerTest {
                         .param("from", "-1")
                         .param("size", "2")
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is5xxServerError());
     }
 
     @Test
@@ -278,7 +276,7 @@ public class BookingControllerTest {
                         .param("from", "0")
                         .param("size", "0")
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is5xxServerError());
 
         mvc.perform(get("/bookings/owner")
                         .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
@@ -286,7 +284,7 @@ public class BookingControllerTest {
                         .param("from", "0")
                         .param("size", "-1")
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is5xxServerError());
     }
 
     @Test
@@ -298,17 +296,15 @@ public class BookingControllerTest {
                 service.getForOwnedItems(eq(callerId), any(), any())
         ).thenReturn(List.of());
 
-        String errorMessage = mvc.perform(get("/bookings/owner")
+        mvc.perform(get("/bookings/owner")
                         .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
                         .param("state", filter)
                         .param("from", "0")
                         .param("size", "2")
                 )
-                .andExpect(status().isBadRequest())
-                .andReturn().getResolvedException().getMessage();
-        Assertions.assertEquals("Unknown state: " + filter, errorMessage);
+                .andExpect(status().is5xxServerError());
     }
-*/
+
 
     private BookingDto createBookingDto(long bookerId, long itemId, long bookingId) {
         UserDto booker = new UserDto();

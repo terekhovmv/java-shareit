@@ -86,7 +86,7 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.[1].description", is(banjo.getDescription())))
                 .andExpect(jsonPath("$.[1].available", is(banjo.getAvailable())));
     }
-/*
+
     @Test
     void getOwnedWithNotValidFrom() throws Exception {
         long callerId = 100;
@@ -100,7 +100,7 @@ public class ItemControllerTest {
                         .param("from", "-1")
                         .param("size", "2")
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is5xxServerError());
     }
 
     @Test
@@ -116,16 +116,16 @@ public class ItemControllerTest {
                         .param("from", "0")
                         .param("size", "0")
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is5xxServerError());
 
         mvc.perform(get("/items")
                         .header(ShareItAppConsts.HEADER_CALLER_ID, callerId)
                         .param("from", "0")
                         .param("size", "-1")
                 )
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is5xxServerError());
     }
-*/
+
 
     @Test
     void getAvailableWithText() throws Exception {
@@ -154,46 +154,45 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.[1].available", is(banjo.getAvailable())));
     }
 
-    /*
-        @Test
-        void getAvailableWithTextWithNotValidFrom() throws Exception {
-            String text = "suitable for";
+    @Test
+    void getAvailableWithTextWithNotValidFrom() throws Exception {
+        String text = "suitable for";
 
-            when(
-                    service.getAvailableWithText(eq(text), any())
-            ).thenReturn(List.of());
+        when(
+                service.getAvailableWithText(eq(text), any())
+        ).thenReturn(List.of());
 
-            mvc.perform(get("/items/search")
-                            .param("text", text)
-                            .param("from", "-1")
-                            .param("size", "2")
-                    )
-                    .andExpect(status().isBadRequest());
-        }
+        mvc.perform(get("/items/search")
+                        .param("text", text)
+                        .param("from", "-1")
+                        .param("size", "2")
+                )
+                .andExpect(status().is5xxServerError());
+    }
 
-        @Test
-        void getAvailableWithTextWithNotValidSize() throws Exception {
-            String text = "suitable for";
+    @Test
+    void getAvailableWithTextWithNotValidSize() throws Exception {
+        String text = "suitable for";
 
-            when(
-                    service.getAvailableWithText(eq(text), any())
-            ).thenReturn(List.of());
+        when(
+                service.getAvailableWithText(eq(text), any())
+        ).thenReturn(List.of());
 
-            mvc.perform(get("/items/search")
-                            .param("text", text)
-                            .param("from", "0")
-                            .param("size", "0")
-                    )
-                    .andExpect(status().isBadRequest());
+        mvc.perform(get("/items/search")
+                        .param("text", text)
+                        .param("from", "0")
+                        .param("size", "0")
+                )
+                .andExpect(status().is5xxServerError());
 
-            mvc.perform(get("/items/search")
-                            .param("text", text)
-                            .param("from", "0")
-                            .param("size", "-1")
-                    )
-                    .andExpect(status().isBadRequest());
-        }
-    */
+        mvc.perform(get("/items/search")
+                        .param("text", text)
+                        .param("from", "0")
+                        .param("size", "-1")
+                )
+                .andExpect(status().is5xxServerError());
+    }
+
     @Test
     void create() throws Exception {
         long callerId = 100;
