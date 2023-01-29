@@ -3,8 +3,8 @@ package ru.practicum.shareit.gateway.request;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.gateway.ShareItAppConsts;
-import ru.practicum.shareit.gateway.request.dto.ItemRequestUpdateDto;
+import ru.practicum.shareit.ShareItAppConsts;
+import ru.practicum.shareit.request.dto.ItemRequestUpdateDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;

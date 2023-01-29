@@ -23,6 +23,7 @@
 	</properties>
 
 	<modules>
+		<module>common</module>
 		<module>gateway</module>
 		<module>server</module>
 	</modules>

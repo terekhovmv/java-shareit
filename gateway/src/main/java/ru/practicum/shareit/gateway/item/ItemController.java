@@ -3,9 +3,9 @@ package ru.practicum.shareit.gateway.item;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.gateway.ShareItAppConsts;
-import ru.practicum.shareit.gateway.item.dto.CommentUpdateDto;
-import ru.practicum.shareit.gateway.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.ShareItAppConsts;
+import ru.practicum.shareit.item.dto.CommentUpdateDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
