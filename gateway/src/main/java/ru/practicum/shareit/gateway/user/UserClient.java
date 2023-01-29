@@ -28,16 +28,16 @@ public class UserClient extends BaseClient {
         return post("", dto);
     }
 
-    public ResponseEntity<Object> get(long userId) {
-        return get("/" + userId);
+    public ResponseEntity<Object> get(long id) {
+        return get("/" + id);
     }
 
     public ResponseEntity<Object> getAll() {
         return get("");
     }
 
-    public ResponseEntity<Object> update(long userId, UserUpdateDto dto) {
-        return patch("/" + userId, dto);
+    public ResponseEntity<Object> update(long id, UserUpdateDto dto) {
+        return patch("/" + id, dto);
     }
 
     public void delete(long userId) {

@@ -27,8 +27,8 @@ public class ItemClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> get(long callerId, long itemId) {
-        return get("/" + itemId, callerId);
+    public ResponseEntity<Object> get(long callerId, long id) {
+        return get("/" + id, callerId);
     }
 
     public ResponseEntity<Object> getOwned(long callerId, int from, int size) {
@@ -52,11 +52,11 @@ public class ItemClient extends BaseClient {
         return post("/", callerId, dto);
     }
 
-    public ResponseEntity<Object> update(long callerId, long itemId, ItemUpdateDto dto) {
-        return patch("/" + itemId, callerId, dto);
+    public ResponseEntity<Object> update(long callerId, long id, ItemUpdateDto dto) {
+        return patch("/" + id, callerId, dto);
     }
 
-    public ResponseEntity<Object> addComment(long callerId, long itemId, CommentUpdateDto dto) {
-        return post("/" + itemId + "/comment", callerId, dto);
+    public ResponseEntity<Object> addComment(long callerId, long id, CommentUpdateDto dto) {
+        return post("/" + id + "/comment", callerId, dto);
     }
 }
