@@ -1,7 +1,7 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.gateway.booking.dto;
 
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.annotations.ValidBookingPeriod;
+import ru.practicum.shareit.gateway.booking.dto.annotations.ValidBookingPeriod;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
