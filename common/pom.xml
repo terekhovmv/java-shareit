@@ -5,11 +5,11 @@
     <parent>
         <groupId>ru.practicum</groupId>
         <artifactId>shareit</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${shareit.version}</version>
     </parent>
 
     <artifactId>shareit-common</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${shareit.version}</version>
 
     <name>ShareIt Common</name>
 
