@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.data.domain.Sort;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.ShareItAppConsts;
 import ru.practicum.shareit.item.dto.CommentDto;
@@ -10,13 +9,10 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.pagination.RandomAccessPageRequest;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequestMapping("/items")
-@Validated
 public class ItemController {
     public final ItemService service;
 
@@ -35,8 +31,8 @@ public class ItemController {
     @GetMapping
     public List<ItemDto> getOwned(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
-            @RequestParam(defaultValue = "0") @Min(0) int from,
-            @RequestParam(defaultValue = "20") @Min(1) int size
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
     ) {
         return service.getOwned(
                 callerId,
@@ -47,8 +43,8 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> getAvailableWithText(
             @RequestParam("text") String text,
-            @RequestParam(defaultValue = "0") @Min(0) int from,
-            @RequestParam(defaultValue = "20") @Min(1) int size
+            @RequestParam(defaultValue = "0") int from,
+            @RequestParam(defaultValue = "20") int size
     ) {
         return service.getAvailableWithText(
                 text,
@@ -59,7 +55,7 @@ public class ItemController {
     @PostMapping
     public ItemDto create(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
-            @Valid @RequestBody ItemUpdateDto dto
+            @RequestBody ItemUpdateDto dto
     ) {
         return service.create(callerId, dto);
     }
@@ -77,7 +73,7 @@ public class ItemController {
     public CommentDto addComment(
             @RequestHeader(ShareItAppConsts.HEADER_CALLER_ID) long callerId,
             @PathVariable long id,
-            @Valid @RequestBody CommentUpdateDto dto
+            @RequestBody CommentUpdateDto dto
     ) {
         return service.addComment(callerId, id, dto);
     }
