@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: ./gateway/Dockerfile
+    container_name: shareit-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - server
+    environment:
+      - SHAREIT_SERVER_URL=http://server:9090
+
+  server:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    container_name: shareit-server
+    ports:
+      - "9090:9090"
+    depends_on:
+      - db
+    environment:
+      - SHAREIT_DB_URL=jdbc:postgresql://db:5432/shareit
+      - SHAREIT_DB_USERNAME=shareitdev
+      - SHAREIT_DB_PASSWORD=shareitdevpwd
+
+  db:
+    image: postgres:15.1-alpine
+    container_name: shareit-db
+    ports:
+      - "6541:5432"
+    environment:
+      POSTGRES_DB: shareit
+      POSTGRES_USER: shareitdev
+      POSTGRES_PASSWORD: shareitdevpwd
+      PGDATA: /var/lib/postgresql/data/
+    volumes:
+      - ./volume-db:/var/lib/postgresql/data/
